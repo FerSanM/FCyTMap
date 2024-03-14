@@ -1,31 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Materias de Carrera 1</title>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        th, td {
-            border: 1px solid #dddddd;
-            text-align: left;
-            padding: 8px;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materias</title>
 </head>
 <body>
-    <h1>Materias de Carrera 1</h1>
-    <table>
+    <h1>Materias</h1>
+    <form method="get">
+        <label for="semestre">Seleccionar Semestre:</label>
+       <select name="semestre" id="semestre">
+    <option value="1" {% if semestre_seleccionado == "1" %}selected{% endif %}>1</option>
+    <option value="2" {% if semestre_seleccionado == "2" %}selected{% endif %}>2</option>
+    <option value="3" {% if semestre_seleccionado == "3" %}selected{% endif %}>3</option>
+    <option value="4" {% if semestre_seleccionado == "4" %}selected{% endif %}>4</option>
+    <option value="5" {% if semestre_seleccionado == "5" %}selected{% endif %}>5</option>
+    <option value="6" {% if semestre_seleccionado == "6" %}selected{% endif %}>6</option>
+    <option value="7" {% if semestre_seleccionado == "7" %}selected{% endif %}>7</option>
+    <option value="8" {% if semestre_seleccionado == "8" %}selected{% endif %}>8</option>
+    <option value="9" {% if semestre_seleccionado == "9" %}selected{% endif %}>9</option>
+    <option value="10" {% if semestre_seleccionado == "10" %}selected{% endif %}>10</option>
+</select>
+<label for="carrera">Seleccionar Carrera:</label>
+       <select name="carrera" id="carrera">
+    {% for carrera in carreras %}
+    <option value="{{ carrera.id }}" {% if carrera_seleccionada == carrera.id %}selected{% endif %}>{{ carrera.Descripcion }}</option>
+    {% endfor %}
+</select>
+
+        <input type="submit" value="Filtrar">
+    </form>
+    <table border="1">
         <thead>
             <tr>
                 <th>Descripción</th>
                 <th>Semestre</th>
+                <th>Carrera</th>
             </tr>
         </thead>
         <tbody>
@@ -33,6 +43,7 @@
             <tr>
                 <td>{{ materia.Descripcion }}</td>
                 <td>{{ materia.Semestre }}</td>
+                <td>{{ materia.idCarrera.Descripcion }}</td>
             </tr>
             {% endfor %}
         </tbody>

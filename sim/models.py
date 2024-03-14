@@ -31,6 +31,8 @@ class Carrera(models.Model):
     Descripcion = models.CharField(max_length=50)
     idFacultad = models.ForeignKey(Facultad, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"{self.id} {self.Descripcion}"
 
 class Materia(models.Model):
     id = models.AutoField(primary_key=True)
