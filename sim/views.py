@@ -1,5 +1,5 @@
 import os
-from .models import User
+from .models import User, Carrera
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
@@ -60,7 +60,24 @@ def sign_out(request):
     return redirect('sign_in')
 
 
+
+"""
+select de materias sin filtro
 def mostrar_materias(request):
     materias = Materia.objects.all()
-
     return render(request, 'mostrar_materias.html', {'materias': materias})
+"""
+"""
+select de materias segun semestre
+def mostrar_materias(request):
+    semestre_seleccionado = request.GET.get('semestre', 1)  # Obtener el semestre seleccionado, por defecto será 1
+    materias = Materia.objects.filter(Semestre=semestre_seleccionado)
+    return render(request, 'mostrar_materias.html',{'materias': materias, 'semestre_seleccionado': semestre_seleccionado})
+"""
+#Select con filtro de carrera y semestre
+def mostrar_materias(request):
+    semestre_seleccionado = request.GET.get('semestre', 1)
+    carrera_seleccionada = request.GET.get('carrera', 1)  # Seleccionar por defecto la carrera con ID 1
+    materias = Materia.objects.filter(Semestre=semestre_seleccionado, idCarrera=carrera_seleccionada)
+    carreras = Carrera.objects.all()
+    return render(request, 'mostrar_materias.html', {'materias': materias, 'semestre_seleccionado': semestre_seleccionado, 'carrera_seleccionada': carrera_seleccionada, 'carreras': carreras})
