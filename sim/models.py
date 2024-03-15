@@ -18,7 +18,7 @@ class User(models.Model):
     correo_electronico = models.EmailField(max_length=100)
 
     def __str__(self):
-        return f"{self.nombre} {self.apellido}"
+        return f"{self.id}{self.nombre}{self.apellido}"
 
 
 class Facultad(models.Model):
@@ -74,3 +74,10 @@ class Actividades(models.Model):
     idUsuario = models.ForeignKey(User, on_delete=models.CASCADE)
     fecha_actividad = models.DateTimeField()
     fecha_notificacion = models.DateTimeField()
+
+class RelacionUsuarioMateria(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    materia = models.ForeignKey(Materia, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.usuario} - {self.materia}"

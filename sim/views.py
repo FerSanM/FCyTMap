@@ -42,8 +42,9 @@ def auth_receiver(request):
 
     # Si la verificación del token fue exitosa, almacena los datos del usuario en la sesión y redirige
     request.session['user_data'] = user_data
-    return redirect('inicio')
+
     correo_electronico = user_data.get('email')
+    print(correo_electronico)
     if User.objects.filter(correo_electronico=correo_electronico).exists():
         print("cuenta ya existente")
         pass
@@ -52,7 +53,7 @@ def auth_receiver(request):
         apellido = user_data.get('family_name')
         nuevo_usuario = User(nombre=nombre, apellido=apellido, correo_electronico=correo_electronico)
         nuevo_usuario.save()
-
+    return redirect('inicio')
 
 def sign_out(request):
     del request.session['user_data']
@@ -75,9 +76,26 @@ def mostrar_materias(request):
     return render(request, 'mostrar_materias.html',{'materias': materias, 'semestre_seleccionado': semestre_seleccionado})
 """
 #Select con filtro de carrera y semestre
+from django.shortcuts import render
+from .models import User, Materia
+
 def mostrar_materias(request):
     semestre_seleccionado = request.GET.get('semestre', 1)
     carrera_seleccionada = request.GET.get('carrera', 1)  # Seleccionar por defecto la carrera con ID 1
     materias = Materia.objects.filter(Semestre=semestre_seleccionado, idCarrera=carrera_seleccionada)
     carreras = Carrera.objects.all()
-    return render(request, 'mostrar_materias.html', {'materias': materias, 'semestre_seleccionado': semestre_seleccionado, 'carrera_seleccionada': carrera_seleccionada, 'carreras': carreras})
+
+    # Obtener el correo electrónico del usuario de la sesión
+    correo_usuario = request.session.get('user_data', {}).get('email')
+    print("Este es el correo del incio de Sesion",correo_usuario)
+    # Buscar el usuario en la base de datos usando el correo electrónico
+    usuario = User.objects.filter(correo_electronico=correo_usuario).first()
+
+    return render(request, 'mostrar_materias.html', {
+        'usuario': usuario,
+        'materias': materias,
+        'semestre_seleccionado': semestre_seleccionado,
+        'carrera_seleccionada': carrera_seleccionada,
+        'carreras': carreras
+    })
+
