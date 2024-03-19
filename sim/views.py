@@ -8,7 +8,8 @@ from google.auth.transport import requests
 from django.shortcuts import render
 from .models import Materia
 import jwt
-
+from django.shortcuts import render, redirect
+from .models import RelacionUsuarioMateria
 GOOGLE_OAUTH_CLIENT_ID = "425881363668-ch0d9plss8pnoukc95a22rpdj54bgaot.apps.googleusercontent.com"
 
 
@@ -90,7 +91,8 @@ def mostrar_materias(request):
     print("Este es el correo del incio de Sesion",correo_usuario)
     # Buscar el usuario en la base de datos usando el correo electrónico
     usuario = User.objects.filter(correo_electronico=correo_usuario).first()
-
+    iduser = usuario.id
+    print("id del Usuario :", iduser)
     return render(request, 'mostrar_materias.html', {
         'usuario': usuario,
         'materias': materias,
@@ -98,4 +100,28 @@ def mostrar_materias(request):
         'carrera_seleccionada': carrera_seleccionada,
         'carreras': carreras
     })
+
+
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+
+
+def guardar_materias(request):
+    if request.method == 'POST':
+        usuario_id = request.POST.get('usuario_id')
+        materias_seleccionadas = request.POST.getlist('materias')
+
+        usuario = User.objects.get(id=usuario_id)
+
+        for materia_id in materias_seleccionadas:
+            materia = Materia.objects.get(id=materia_id)
+            relacion = RelacionUsuarioMateria(usuario=usuario, materia=materia)
+            relacion.save()
+            print("Se guardo :D")
+
+        # Redirigir a la misma página donde estaba el formulario
+        return mostrar_materias(request)
+
+
+    # Manejar otras solicitudes, como GET
 

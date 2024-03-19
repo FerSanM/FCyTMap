@@ -34,20 +34,16 @@
         </select>
         <input type="submit" value="Filtrar">
     </form>
-<form method="post" action="{% url 'guardar_materias' %}">
-    {% csrf_token %}
-    {% for materia in materias %}
-    <label>
-        <input type="checkbox" name="materias" value="{{ materia.id }}"> {{ materia.Descripcion }}
-    </label>
-    <br>
-    {% endfor %}
-    <input type="hidden" name="usuario_id" value="{{ usuario.id }}">
-    <input type="submit" value="Guardar">
-</form>
-
-
+    <form method="post">
+        {% csrf_token %}
+        {% for materia in materias %}
+        <label>
+            <input type="checkbox" name="materias" value="{{ materia.id }}"> {{ materia.Descripcion }}
+        </label>
+        <br>
+        {% endfor %}
+        <input type="submit" value="Guardar">
+    </form>
 {% endif %}
-
 </body>
 </html>

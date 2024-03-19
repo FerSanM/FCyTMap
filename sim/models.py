@@ -41,7 +41,7 @@ class Materia(models.Model):
     Semestre = models.IntegerField()
 
     def __str__(self):
-        return f"{self.Descripcion}{self.Semestre}"
+        return f"{self.id}{self.Descripcion}{self.Semestre}"
 
 
 class Docente(models.Model):
@@ -61,10 +61,17 @@ class Planta(models.Model):
     idEdificio = models.ForeignKey(Edificio, on_delete=models.CASCADE)
 
 
+
 class Sala(models.Model):
     id = models.AutoField(primary_key=True)
     Descripcion = models.CharField(max_length=50)
     idPlanta = models.ForeignKey(Planta, on_delete=models.CASCADE)
+    latitud = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)  # Para latitud, máx. 9 dígitos y 6 decimales
+    longitud = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)  # Para longitud, máx. 9 dígitos y 6 decimales
+
+    def __str__(self):
+        return self.Descripcion
+
 
 
 class Actividades(models.Model):
@@ -80,4 +87,4 @@ class RelacionUsuarioMateria(models.Model):
     materia = models.ForeignKey(Materia, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.usuario} - {self.materia}"
+        return f"{self.usuario}{self.materia}"

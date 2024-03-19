@@ -7,4 +7,6 @@ urlpatterns = [
     path('sign-out', views.sign_out, name='sign_out'),
     path('materias/', views.mostrar_materias, name='mostrar_materias'),
     path('auth-receiver', views.auth_receiver, name='auth_receiver'),
+    path('guardar_materias/',views.guardar_materias, name='guardar_materias'),
+
 ]
