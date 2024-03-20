@@ -160,8 +160,23 @@
         minZoom: 19,
 
 }).addTo(map);
-
+ {% for ubicacion in ubicaciones %}
+            L.marker([{{ ubicacion.latitud }}, {{ ubicacion.longitud }}]).addTo(map)
+                .bindPopup("{{ ubicacion.descripcion }}");
+        {% endfor %}
     L.control.scale().addTo(map);
+    var ubicaciones = [];
+
+        // Añade las ubicaciones de Django a la lista
+        {% for ubicacion in ubicaciones %}
+            ubicaciones.push([{{ ubicacion.latitud }}, {{ ubicacion.longitud }}, "{{ ubicacion.descripcion }}"]);
+        {% endfor %}
+        console.log(ubicaciones);
+        // Itera sobre la lista de ubicaciones y agrega marcadores al mapa
+        ubicaciones.forEach(function(ubicacion) {
+            var marker = L.marker([ubicacion[0], ubicacion[1]]).addTo(map);
+            marker.bindPopup(ubicacion[2]); // Agrega un mensaje emergente al marcador con el nombre de la ubicación
+        });
 // Crear un control de zoom personalizado
 var customControl = L.control.zoom({
     position: 'bottomright' // Cambiar la posición del control de zoom

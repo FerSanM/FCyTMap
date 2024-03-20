@@ -8,5 +8,5 @@ urlpatterns = [
     path('materias/', views.mostrar_materias, name='mostrar_materias'),
     path('auth-receiver', views.auth_receiver, name='auth_receiver'),
     path('guardar_materias/',views.guardar_materias, name='guardar_materias'),
-
+    path('eliminar_materias/',views.eliminar_materias, name='eliminar_materias')
 ]
