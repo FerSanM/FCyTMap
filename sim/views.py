@@ -9,9 +9,9 @@ from django.shortcuts import render
 from .models import Materia
 import jwt
 from django.shortcuts import render, redirect
-from .models import RelacionUsuarioMateria
+from .models import RelacionUsuarioMateria,RelacionMateriaSala
 GOOGLE_OAUTH_CLIENT_ID = "425881363668-ch0d9plss8pnoukc95a22rpdj54bgaot.apps.googleusercontent.com"
-
+import datetime
 
 def sign_in(request):
     return render(request, 'sign_in.html')
@@ -19,8 +19,27 @@ def sign_in(request):
 
 def inicio(request):
     ubicaciones = Sala.objects.all()
-    return render(request, 'inicio.html',{'ubicaciones': ubicaciones})
 
+    # Obtener el día de la semana actual (lunes=0, martes=1, ..., domingo=6)
+    dia_actual = datetime.datetime.now().weekday()
+    dia_actual = dia_actual+1
+    hora_actual = datetime.datetime.now().time()
+    relaciones_sala_materia = RelacionMateriaSala.objects.filter(dia_semana=dia_actual, hora_entrada__lte=hora_actual,
+                                                                 hora_salida__gte=hora_actual)
+    correo_usuario = request.session.get('user_data', {}).get('email')
+    usuario = User.objects.filter(correo_electronico=correo_usuario).first()
+
+
+
+    #print(relaciones_sala_materia)
+    #print("Total de datos en ubicaciones:", len(ubicaciones))
+    #print("Total de datos en relaciones:",len(relaciones_sala_materia))
+    #print("Seleccion del usuario :",materias_seleccionadas)
+    return render(request, 'inicio.html', {
+        'ubicaciones': ubicaciones,
+        'relaciones': relaciones_sala_materia,
+
+    })
 
 @csrf_exempt
 def auth_receiver(request):
@@ -83,7 +102,7 @@ def mostrar_materias(request):
     usuario = User.objects.filter(correo_electronico=correo_usuario).first()
     iduser = usuario.id
     materias_seleccionadas = Materia.objects.filter(relacionusuariomateria__usuario__id=iduser)
-    print("MATERIAS SELECCIONADAS",materias_seleccionadas)
+    #print("MATERIAS SELECCIONADAS",materias_seleccionadas)
     return render(request, 'mostrar_materias.html', {
         'usuario': usuario,
         'materias': materias,

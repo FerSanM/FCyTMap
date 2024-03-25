@@ -41,8 +41,9 @@ class Materia(models.Model):
     semestre = models.IntegerField()
 
     def __str__(self):
-        return f"{self.id}{self.descripcion}{self.semestre}"
-
+        return f"{self.id} - {self.descripcion} - {self.idCarrera.descripcion} - {self.semestre}"
+    class Meta:
+        ordering = ['descripcion']
 
 class Docente(models.Model):
     id = models.AutoField(primary_key=True)
@@ -59,6 +60,8 @@ class Planta(models.Model):
     id = models.AutoField(primary_key=True)
     descripcion = models.CharField(max_length=50)
     idEdificio = models.ForeignKey(Edificio, on_delete=models.CASCADE)
+    def __str__(self):
+        return f"{self.descripcion}-{self.idEdificio.descripcion}"
 
 
 
@@ -70,7 +73,7 @@ class Sala(models.Model):
     longitud = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)  # Para longitud, máx. 9 dígitos y 6 decimales
 
     def __str__(self):
-        return f"{self.descripcion}{self.latitud}{self.longitud}"
+        return f"{self.descripcion}-{self.latitud}-{self.longitud}"
 
 
 
@@ -87,12 +90,14 @@ class RelacionUsuarioMateria(models.Model):
     materia = models.ForeignKey(Materia, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.usuario}{self.materia}"
+        return f"{self.usuario}-{self.materia}"
 class DiasSemana(models.Model):
     id = models.AutoField(primary_key=True)
     descripcion = models.CharField(max_length=25)
+    def __str__(self):
+        return f"{self.descripcion}"
 class RelacionMateriaSala(models.Model):
-
+    id = models.AutoField(primary_key=True)
     materia = models.ForeignKey(Materia, on_delete=models.CASCADE)
     sala = models.ForeignKey(Sala, on_delete=models.CASCADE)
     hora_entrada = models.TimeField()
@@ -100,6 +105,6 @@ class RelacionMateriaSala(models.Model):
     dia_semana = models.ForeignKey(DiasSemana, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.materia} - {self.sala} ({self.dia_semana}: {self.hora_entrada}-{self.hora_salida})"
+        return f"{self.materia} - {self.sala} -{self.dia_semana}: {self.hora_entrada}-{self.hora_salida})"
 
 
