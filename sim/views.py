@@ -208,7 +208,7 @@ def get_carreras(request):
 
 
 def get_materias(request, idcarrera, semestre):
-    materias = list(Materia.objects.filter(idCarrera=idcarrera, Semestre=semestre).values())
+    materias = list(Materia.objects.filter(idCarrera=idcarrera, semestre=semestre).values())
 
     if len(materias) > 0:
         data = {'message': "Success", 'materias': materias}
@@ -254,8 +254,8 @@ def get_tabla(request):
                     # Aquí puedes agregar los campos de la tabla Materia que necesites
                     datos.append({
                         'id': relacion.id,
-                        'Materia': materia.Descripcion,
-                        'Semestre': materia.Semestre
+                        'Materia': materia.descripcion,
+                        'Semestre': materia.semestre
                     })
             if datos:
                 return JsonResponse({'message': 'Success', 'datos': datos})

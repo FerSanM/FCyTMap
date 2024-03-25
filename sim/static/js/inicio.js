@@ -9,7 +9,7 @@ const listarMaterias = async (idCarrera, Semestre) => {
             let opciones = ``;
             data.materias.forEach((materia) => {
                 opciones += `<input type="checkbox" name="materias" class="btn-check" id="${materia.id}" value="${materia.id}" autocomplete="off">
-                                <label class="btn" id="btnmate" for="${materia.id}">${materia.Descripcion}</label>`;
+                                <label class="btn" id="btnmate" for="${materia.id}">${materia.descripcion}</label>`;
             })
             matecon.innerHTML = opciones
 
@@ -32,7 +32,7 @@ const listarCarreras = async () => {
 
             let opciones = ``;
             data.carreras.forEach((carrera) => {
-                opciones += `<option value="${carrera.id}">${carrera.Descripcion}</option>`;
+                opciones += `<option value="${carrera.id}">${carrera.descripcion}</option>`;
             })
 
             carrera.innerHTML = opciones
