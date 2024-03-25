@@ -1,0 +1,135 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+#imguser {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+body, html {
+    font-family: "Montserrat", sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+}
+
+.container-fluid {
+    display: flex;
+    background-color: white;
+    width: 358px;
+    margin-left: 20px;
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-toggler {
+    padding-right: 0px;
+    border: none !important;
+}
+
+.bi.bi-list {
+    display: flex;
+    justify-content: center;
+    width: 20px;
+}
+
+.bi.bi-list:hover {
+    color: black !important;;
+}
+
+.navbar-toggler:focus {
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.form-control {
+    width: 260px;
+    padding-left: 0px;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.bordercheck {
+    border: solid 1px;
+    border-radius: 20px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+}
+
+.col {
+    display: flex;
+    padding-right: 0px;
+    padding-left: 0px;
+}
+
+.row {
+    padding-left: 0px;
+}
+
+#carrera {
+    width: 35%;
+}
+
+#semestre {
+    width: 20%;
+}
+
+#btnfil {
+    margin-left: 10px;
+}
+
+.selmate {
+    display: flex;
+    align-items: center;
+}
+
+.sellabel {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+#btnmate {
+    font-size: 13px;
+    margin-top: 10px;
+}
+
+#materias {
+    width: 5%;
+}
+
+#offcanvasNavbar {
+    width: 300px;
+}
+
+.table-responsive {
+    padding-left: 60px;
+    padding-right: 60px;
+
+}
+
+.container-error {
+    color: white;
+    background-color: red;
+    border-radius: 5px;
+    padding-top: 7px;
+    margin-right: 10px;
+    padding-bottom: 7px;
+}
+
+.error-container {
+    padding-right: 5px;
+    padding-left: 5px;
+}
+
+.colsemestre {
+    justify-items: center;
+    align-content: center;
+    align-items: center;
+
+}

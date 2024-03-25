@@ -1,6 +1,9 @@
 import os
+
+from django.views.decorators.http import require_http_methods
+
 from .models import User, Carrera
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from google.oauth2 import id_token
@@ -10,6 +13,11 @@ from .models import Materia
 import jwt
 from django.shortcuts import render, redirect
 from .models import RelacionUsuarioMateria
+from django.shortcuts import render
+from .models import User, Materia
+import json
+from django.views.decorators.csrf import csrf_protect
+
 GOOGLE_OAUTH_CLIENT_ID = "425881363668-ch0d9plss8pnoukc95a22rpdj54bgaot.apps.googleusercontent.com"
 
 
@@ -18,7 +26,26 @@ def sign_in(request):
 
 
 def inicio(request):
-    return render(request, 'inicio.html')
+    # semestre_seleccionado = request.GET.get('semestre', 1)
+    # carrera_seleccionada = request.GET.get('carrera', 1)  # Seleccionar por defecto la carrera con ID 1
+    # materias = Materia.objects.filter(Semestre=semestre_seleccionado, idCarrera=carrera_seleccionada)
+    # carreras = Carrera.objects.all()
+
+    # Obtener el correo electrónico del usuario de la sesión
+    correo_usuario = request.session.get('user_data', {}).get('email')
+    print("Este es el correo del incio de Sesion", correo_usuario)
+    # Buscar el usuario en la base de datos usando el correo electrónico
+    usuario = User.objects.filter(correo_electronico=correo_usuario).first()
+    iduser = usuario.id
+    print("id del Usuario :", iduser)
+    context = {
+        'usuario': usuario,
+        # 'materias': materias,
+        # 'semestre_seleccionado': semestre_seleccionado,
+        # 'carrera_seleccionada': carrera_seleccionada,
+        # 'carreras': carreras
+    }
+    return render(request, 'inicio.html', context)
 
 
 @csrf_exempt
@@ -56,11 +83,11 @@ def auth_receiver(request):
         nuevo_usuario.save()
     return redirect('inicio')
 
+
 def sign_out(request):
     del request.session['user_data']
     print("Sesion Cerrada")
     return redirect('sign_in')
-
 
 
 """
@@ -76,11 +103,16 @@ def mostrar_materias(request):
     materias = Materia.objects.filter(Semestre=semestre_seleccionado)
     return render(request, 'mostrar_materias.html',{'materias': materias, 'semestre_seleccionado': semestre_seleccionado})
 """
-#Select con filtro de carrera y semestre
-from django.shortcuts import render
-from .models import User, Materia
+
+
+# Select con filtro de carrera y semestre
+
 
 def mostrar_materias(request):
+    return render(request, 'mostrar_materias')
+
+
+"""def mostrar_materias(request):
     semestre_seleccionado = request.GET.get('semestre', 1)
     carrera_seleccionada = request.GET.get('carrera', 1)  # Seleccionar por defecto la carrera con ID 1
     materias = Materia.objects.filter(Semestre=semestre_seleccionado, idCarrera=carrera_seleccionada)
@@ -88,7 +120,7 @@ def mostrar_materias(request):
 
     # Obtener el correo electrónico del usuario de la sesión
     correo_usuario = request.session.get('user_data', {}).get('email')
-    print("Este es el correo del incio de Sesion",correo_usuario)
+    print("Este es el correo del incio de Sesion", correo_usuario)
     # Buscar el usuario en la base de datos usando el correo electrónico
     usuario = User.objects.filter(correo_electronico=correo_usuario).first()
     iduser = usuario.id
@@ -99,29 +131,103 @@ def mostrar_materias(request):
         'semestre_seleccionado': semestre_seleccionado,
         'carrera_seleccionada': carrera_seleccionada,
         'carreras': carreras
-    })
-
+    })"""
 
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
 
+@csrf_exempt
 def guardar_materias(request):
-    if request.method == 'POST':
-        usuario_id = request.POST.get('usuario_id')
-        materias_seleccionadas = request.POST.getlist('materias')
+    correo_usuario = request.session.get('user_data', {}).get('email')
+    usuario = User.objects.filter(correo_electronico=correo_usuario).first()
+    iduser = usuario.id
 
-        usuario = User.objects.get(id=usuario_id)
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        materias_seleccionadas = data.get('materia_id', [])
+
+        if RelacionUsuarioMateria.objects.filter(usuario_id=iduser, materia_id__in=materias_seleccionadas).exists():
+            return JsonResponse({'message': 'No se pueden guardar materias repetidas.'}, status=400)
 
         for materia_id in materias_seleccionadas:
-            materia = Materia.objects.get(id=materia_id)
-            relacion = RelacionUsuarioMateria(usuario=usuario, materia=materia)
+            relacion = RelacionUsuarioMateria(usuario_id=iduser, materia_id=materia_id)
             relacion.save()
-            print("Se guardo :D")
+            print("jjajajajajajajajajajajja")
 
-        # Redirigir a la misma página donde estaba el formulario
-        return mostrar_materias(request)
-
+        return JsonResponse({'message': 'Materias guardadas correctamente'})
+    else:
+        return JsonResponse({'error': 'No se pudo procesar la solicitud'}, status=400)
 
     # Manejar otras solicitudes, como GET
 
+
+def get_carreras(request):
+    carreras = list(Carrera.objects.values())
+
+    if len(carreras) > 0:
+        data = {'message': "Success", 'carreras': carreras}
+    else:
+        data = {'message': "Not Found"}
+
+    return JsonResponse(data)
+
+
+def get_materias(request, idcarrera, semestre):
+    materias = list(Materia.objects.filter(idCarrera=idcarrera, Semestre=semestre).values())
+
+    if len(materias) > 0:
+        data = {'message': "Success", 'materias': materias}
+    else:
+        data = {'message': "Not Found"}
+
+    return JsonResponse(data)
+
+
+@require_http_methods(["DELETE"])
+def eliminar_relacion(request, relacion_id):
+    try:
+        # Buscar la relación por su ID
+        relacion_eliminar = RelacionUsuarioMateria.objects.get(id=relacion_id)
+        # Eliminar la relación
+        relacion_eliminar.delete()
+        # Devolver una respuesta de éxito
+        return JsonResponse({'message': 'Relación eliminada correctamente'})
+    except RelacionUsuarioMateria.DoesNotExist:
+        # Si la relación no existe, devolver un error
+        return JsonResponse({'error': 'La relación especificada no existe'}, status=404)
+    except Exception as e:
+        # Si ocurre algún otro error, devolver un error genérico
+        return JsonResponse({'error': 'Hubo un problema al eliminar la relación'}, status=500)
+
+
+def get_tabla(request):
+    correo_usuario = request.session.get('user_data', {}).get('email')
+    usuario = User.objects.filter(correo_electronico=correo_usuario).first()
+
+    if usuario:
+        id_usuario = usuario.id
+        relaciones_usuario_materia = RelacionUsuarioMateria.objects.filter(usuario_id=id_usuario)
+
+        if relaciones_usuario_materia:
+            datos = []
+
+            for relacion in relaciones_usuario_materia:
+                materia_id = relacion.materia_id
+                materia = Materia.objects.filter(id=materia_id).first()
+
+                if materia:
+                    # Aquí puedes agregar los campos de la tabla Materia que necesites
+                    datos.append({
+                        'id': relacion.id,
+                        'Materia': materia.Descripcion,
+                        'Semestre': materia.Semestre
+                    })
+            if datos:
+                return JsonResponse({'message': 'Success', 'datos': datos})
+            else:
+                return JsonResponse({'message': 'No se encontraron datos de la materia para el usuario'})
+        else:
+            return JsonResponse({'message': 'No se encontraron relaciones usuario-materia para el usuario'})
+    else:
+        return JsonResponse({'message': 'Usuario no encontrado'})
