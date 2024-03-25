@@ -102,13 +102,15 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Asuncion'
 
 USE_I18N = True
-
+USE_L10N = True
 USE_TZ = True
 
-
+TIME_INPUT_FORMATS = [
+    '%I:%M %p',  # Formato de 12 horas con AM/PM (por ejemplo, 12:00 PM)
+]
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 

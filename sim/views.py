@@ -4,6 +4,9 @@ from django.views.decorators.http import require_http_methods
 
 from .models import User, Carrera
 from django.http import HttpResponse, JsonResponse
+
+from .models import User, Carrera, Sala
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from google.oauth2 import id_token
@@ -17,6 +20,8 @@ from django.shortcuts import render
 from .models import User, Materia
 import json
 from django.views.decorators.csrf import csrf_protect
+import datetime
+from .models import RelacionUsuarioMateria, RelacionMateriaSala
 
 GOOGLE_OAUTH_CLIENT_ID = "425881363668-ch0d9plss8pnoukc95a22rpdj54bgaot.apps.googleusercontent.com"
 
@@ -38,14 +43,26 @@ def inicio(request):
     usuario = User.objects.filter(correo_electronico=correo_usuario).first()
     iduser = usuario.id
     print("id del Usuario :", iduser)
-    context = {
-        'usuario': usuario,
-        # 'materias': materias,
-        # 'semestre_seleccionado': semestre_seleccionado,
-        # 'carrera_seleccionada': carrera_seleccionada,
-        # 'carreras': carreras
-    }
-    return render(request, 'inicio.html', context)
+    ubicaciones = Sala.objects.all()
+
+    # Obtener el día de la semana actual (lunes=0, martes=1, ..., domingo=6)
+    dia_actual = datetime.datetime.now().weekday()
+    dia_actual = dia_actual + 1
+    hora_actual = datetime.datetime.now().time()
+    relaciones_sala_materia = RelacionMateriaSala.objects.filter(dia_semana=dia_actual, hora_entrada__lte=hora_actual,
+                                                                 hora_salida__gte=hora_actual)
+    correo_usuario = request.session.get('user_data', {}).get('email')
+    usuario = User.objects.filter(correo_electronico=correo_usuario).first()
+
+    # print(relaciones_sala_materia)
+    # print("Total de datos en ubicaciones:", len(ubicaciones))
+    # print("Total de datos en relaciones:",len(relaciones_sala_materia))
+    # print("Seleccion del usuario :",materias_seleccionadas)
+    return render(request, 'inicio.html', {
+        'ubicaciones': ubicaciones,
+        'relaciones': relaciones_sala_materia,
+
+    })
 
 
 @csrf_exempt
@@ -81,7 +98,7 @@ def auth_receiver(request):
         apellido = user_data.get('family_name')
         nuevo_usuario = User(nombre=nombre, apellido=apellido, correo_electronico=correo_electronico)
         nuevo_usuario.save()
-    return redirect('inicio')
+    return redirect('inicio', )
 
 
 def sign_out(request):
@@ -115,16 +132,21 @@ def mostrar_materias(request):
 """def mostrar_materias(request):
     semestre_seleccionado = request.GET.get('semestre', 1)
     carrera_seleccionada = request.GET.get('carrera', 1)  # Seleccionar por defecto la carrera con ID 1
-    materias = Materia.objects.filter(Semestre=semestre_seleccionado, idCarrera=carrera_seleccionada)
+    materias = Materia.objects.filter(semestre=semestre_seleccionado, idCarrera=carrera_seleccionada)
     carreras = Carrera.objects.all()
+
 
     # Obtener el correo electrónico del usuario de la sesión
     correo_usuario = request.session.get('user_data', {}).get('email')
+
     print("Este es el correo del incio de Sesion", correo_usuario)
+
+    #print("Este es el correo del incio de Sesion",correo_usuario)
     # Buscar el usuario en la base de datos usando el correo electrónico
     usuario = User.objects.filter(correo_electronico=correo_usuario).first()
     iduser = usuario.id
-    print("id del Usuario :", iduser)
+    materias_seleccionadas = Materia.objects.filter(relacionusuariomateria__usuario__id=iduser)
+    #print("MATERIAS SELECCIONADAS",materias_seleccionadas)
     return render(request, 'mostrar_materias.html', {
         'usuario': usuario,
         'materias': materias,
@@ -154,12 +176,24 @@ def guardar_materias(request):
             relacion = RelacionUsuarioMateria(usuario_id=iduser, materia_id=materia_id)
             relacion.save()
             print("jjajajajajajajajajajajja")
-
         return JsonResponse({'message': 'Materias guardadas correctamente'})
     else:
         return JsonResponse({'error': 'No se pudo procesar la solicitud'}, status=400)
 
-    # Manejar otras solicitudes, como GET
+
+def eliminar_materias(request):
+    if request.method == 'POST':
+        usuario_id = request.POST.get('usuario_id')
+        materia_id = request.POST.get('materia_id')
+
+        if materia_id:
+            try:
+                relacion_materia_usuario = RelacionUsuarioMateria.objects.get(materia=materia_id, usuario=usuario_id)
+                relacion_materia_usuario.delete()
+                print("Materia Eliminada :D")
+                return redirect('mostrar_materias')
+            except RelacionUsuarioMateria.DoesNotExist:
+                return redirect('mostrar_materias')
 
 
 def get_carreras(request):

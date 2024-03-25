@@ -12,42 +12,78 @@
     <h1>Bienvenido, {{ usuario.nombre }}, ID:{{ usuario.id }}</h1>
     {% endif %}
     <h1>Materias</h1>
-    <form method="get">
-        <label for="semestre">Seleccionar Semestre:</label>
-        <select name="semestre" id="semestre">
-            <option value="1" {% if semestre_seleccionado == "1" %}selected{% endif %}>1</option>
-            <option value="2" {% if semestre_seleccionado == "2" %}selected{% endif %}>2</option>
-            <option value="3" {% if semestre_seleccionado == "3" %}selected{% endif %}>3</option>
-            <option value="4" {% if semestre_seleccionado == "4" %}selected{% endif %}>4</option>
-            <option value="5" {% if semestre_seleccionado == "5" %}selected{% endif %}>5</option>
-            <option value="6" {% if semestre_seleccionado == "6" %}selected{% endif %}>6</option>
-            <option value="7" {% if semestre_seleccionado == "7" %}selected{% endif %}>7</option>
-            <option value="8" {% if semestre_seleccionado == "8" %}selected{% endif %}>8</option>
-            <option value="9" {% if semestre_seleccionado == "9" %}selected{% endif %}>9</option>
-            <option value="10" {% if semestre_seleccionado == "10" %}selected{% endif %}>10</option>
-        </select>
-        <label for="carrera">Seleccionar Carrera:</label>
-        <select name="carrera" id="carrera">
-            {% for carrera in carreras %}
-            <option value="{{ carrera.id }}" {% if carrera_seleccionada == carrera.id %}selected{% endif %}>{{ carrera.Descripcion }}</option>
-            {% endfor %}
-        </select>
-        <input type="submit" value="Filtrar">
-    </form>
+    <table>
+    <tr>
+         {% for ubicacion in ubicaciones %}
+        <td>{{ ubicacion.latitud }}</td>
+        <td>{{ ubicacion.longitud }}</td>
+         {% endfor %}
+    </tr>
+    </table>
 <form method="post" action="{% url 'guardar_materias' %}">
     {% csrf_token %}
+    
+    <!-- Primer bloque para la selección de semestre y carrera -->
+    <label for="semestre">Seleccionar Semestre:</label>
+    <select name="semestre" id="semestre">
+        <option value="1" {% if semestre_seleccionado == "1" %}selected{% endif %}>1</option>
+        <option value="2" {% if semestre_seleccionado == "2" %}selected{% endif %}>2</option>
+        <option value="3" {% if semestre_seleccionado == "3" %}selected{% endif %}>3</option>
+        <option value="4" {% if semestre_seleccionado == "4" %}selected{% endif %}>4</option>
+        <option value="5" {% if semestre_seleccionado == "5" %}selected{% endif %}>5</option>
+        <option value="6" {% if semestre_seleccionado == "6" %}selected{% endif %}>6</option>
+        <option value="7" {% if semestre_seleccionado == "7" %}selected{% endif %}>7</option>
+        <option value="8" {% if semestre_seleccionado == "8" %}selected{% endif %}>8</option>
+        <option value="9" {% if semestre_seleccionado == "9" %}selected{% endif %}>9</option>
+        <option value="10" {% if semestre_seleccionado == "10" %}selected{% endif %}>10</option>
+    </select>
+    
+    <label for="carrera">Seleccionar Carrera:</label>
+    <select name="carrera" id="carrera">
+        {% for carrera in carreras %}
+        <option value="{{ carrera.id }}" {% if carrera_seleccionada == carrera.id %}selected{% endif %}>{{ carrera.descripcion }}</option>
+        {% endfor %}
+    </select>
+    
+    <!-- Segundo bloque para la selección de materias -->
     {% for materia in materias %}
     <label>
-        <input type="checkbox" name="materias" value="{{ materia.id }}"> {{ materia.Descripcion }}
+        <input type="checkbox" name="materias" value="{{ materia.id }}"> {{ materia.descripcion }}
     </label>
     <br>
     {% endfor %}
+    
+    <!-- Campo oculto para el ID de usuario -->
     <input type="hidden" name="usuario_id" value="{{ usuario.id }}">
+    
+    <!-- Botón para enviar el formulario -->
     <input type="submit" value="Guardar">
 </form>
 
 
+    <!-- Tabla de materias seleccionadas -->
+    <h2>Materias Seleccionadas</h2>
+    <table border="1">
+        <tr>
+            <th>Materia Seleccionada</th>
+            <th>Acción</th> <!-- Columna para el botón Eliminar -->
+        </tr>
+        {% for materia_seleccionada in materias_seleccionadas %}
+        <tr>
+            <td>{{ materia_seleccionada.descripcion }}</td>
+            <td>
+                <form method="post" action="{% url 'eliminar_materias' %}" >
+                    {% csrf_token %}
+                    <input type="hidden" name="materia_id" value="{{ materia_seleccionada.id }}">
+                    <input type="hidden" name="usuario_id" value="{{ usuario.id }}">
+                    <input type="submit" value="Eliminar">
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
 {% endif %}
 
 </body>
 </html>
+

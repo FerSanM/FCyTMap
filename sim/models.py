@@ -23,12 +23,12 @@ class User(models.Model):
 
 class Facultad(models.Model):
     id = models.AutoField(primary_key=True)
-    Descripcion = models.CharField(max_length=50)
+    descripcion = models.CharField(max_length=50)
 
 
 class Carrera(models.Model):
     id = models.AutoField(primary_key=True)
-    Descripcion = models.CharField(max_length=50)
+    descripcion = models.CharField(max_length=50)
     idFacultad = models.ForeignKey(Facultad, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -36,47 +36,50 @@ class Carrera(models.Model):
 
 class Materia(models.Model):
     id = models.AutoField(primary_key=True)
-    Descripcion = models.CharField(max_length=50)
+    descripcion = models.CharField(max_length=50)
     idCarrera = models.ForeignKey(Carrera, on_delete=models.CASCADE)
-    Semestre = models.IntegerField()
+    semestre = models.IntegerField()
 
     def __str__(self):
-        return f"{self.id}{self.Descripcion}{self.Semestre}"
-
+        return f"{self.id} - {self.descripcion} - {self.idCarrera.descripcion} - {self.semestre}"
+    class Meta:
+        ordering = ['descripcion']
 
 class Docente(models.Model):
     id = models.AutoField(primary_key=True)
-    Nombre = models.CharField(max_length=50)
-    Apellido = models.CharField(max_length=50)
+    nombre = models.CharField(max_length=50)
+    apellido = models.CharField(max_length=50)
 
 
 class Edificio(models.Model):
     id = models.AutoField(primary_key=True)
-    Descripcion = models.CharField(max_length=50)
+    descripcion = models.CharField(max_length=50)
 
 
 class Planta(models.Model):
     id = models.AutoField(primary_key=True)
-    Descripcion = models.CharField(max_length=50)
+    descripcion = models.CharField(max_length=50)
     idEdificio = models.ForeignKey(Edificio, on_delete=models.CASCADE)
+    def __str__(self):
+        return f"{self.descripcion}-{self.idEdificio.descripcion}"
 
 
 
 class Sala(models.Model):
     id = models.AutoField(primary_key=True)
-    Descripcion = models.CharField(max_length=50)
+    descripcion = models.CharField(max_length=50)
     idPlanta = models.ForeignKey(Planta, on_delete=models.CASCADE)
     latitud = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)  # Para latitud, máx. 9 dígitos y 6 decimales
     longitud = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)  # Para longitud, máx. 9 dígitos y 6 decimales
 
     def __str__(self):
-        return self.Descripcion
+        return f"{self.descripcion}-{self.latitud}-{self.longitud}"
 
 
 
 class Actividades(models.Model):
     id = models.AutoField(primary_key=True)
-    Descripcion = models.CharField(max_length=50)
+    descripcion = models.CharField(max_length=50)
     idSala = models.ForeignKey(Sala, on_delete=models.CASCADE)
     idUsuario = models.ForeignKey(User, on_delete=models.CASCADE)
     fecha_actividad = models.DateTimeField()
@@ -87,4 +90,21 @@ class RelacionUsuarioMateria(models.Model):
     materia = models.ForeignKey(Materia, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.usuario}{self.materia}"
+        return f"{self.usuario}-{self.materia}"
+class DiasSemana(models.Model):
+    id = models.AutoField(primary_key=True)
+    descripcion = models.CharField(max_length=25)
+    def __str__(self):
+        return f"{self.descripcion}"
+class RelacionMateriaSala(models.Model):
+    id = models.AutoField(primary_key=True)
+    materia = models.ForeignKey(Materia, on_delete=models.CASCADE)
+    sala = models.ForeignKey(Sala, on_delete=models.CASCADE)
+    hora_entrada = models.TimeField()
+    hora_salida = models.TimeField()
+    dia_semana = models.ForeignKey(DiasSemana, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.materia} - {self.sala} -{self.dia_semana}: {self.hora_entrada}-{self.hora_salida})"
+
+
