@@ -199,11 +199,14 @@
                 .bindPopup("{{ ubicacion.descripcion }}");
             ubicaciones.push([{{ ubicacion.latitud }}, {{ ubicacion.longitud }},"{{ ubicacion.descripcion }}",{{ ubicacion.id }}]);
  {% endfor %}
-    
+
     L.control.scale().addTo(map);
         console.log("AULAS",ubicaciones)
         console.log("AULAS CON MATERIAS",relaciones)
     function existeCoincidencia() {
+            if (usuariorelaciones.length === 0) {
+             return false; // No hay coincidencia
+    }
     for (var i = 0; i < usuariorelaciones[0].length; i++) {
         if (relaciones.some(function(relacion) {
             return relacion[7] === usuariorelaciones[0][i];
@@ -217,7 +220,7 @@ ubicaciones.forEach(function(ubicacion) {
     var marker = L.marker([ubicacion[0], ubicacion[1]]).addTo(map);
     marker.bindPopup(ubicacion[2]);
     var relacionesDeSala = relaciones.filter(function(relacion) {
-        return relacion[1] === ubicacion[3]; 
+        return relacion[1] === ubicacion[3];
     });
 
 relacionesDeSala.forEach(function(relacion) {
@@ -230,12 +233,12 @@ relacionesDeSala.forEach(function(relacion) {
 
 // Construir el contenido del popup según si hay clase o no
 var popupContent;
-if (hayClase) {
-    popupContent = "<p>Tienes Clase Ahora</p>" + materiaContent + "<br>" + desdeContent + "<br>" + hastaContent + "<br>" + carreraContent;
-} else {
-    popupContent = materiaContent + "<br>" + desdeContent + "<br>" + hastaContent + "<br>" + carreraContent;
-}
-        
+  if (hayClase && relacion[7] === usuariorelaciones[0][0]) {
+        popupContent = "<p>Tienes Clase Ahora</p>" + materiaContent + "<br>" + desdeContent + "<br>" + hastaContent + "<br>" + carreraContent;
+    } else {
+        popupContent = materiaContent + "<br>" + desdeContent + "<br>" + hastaContent + "<br>" + carreraContent;
+    }
+
         
         // Agregar el contenido al popup
         marker.bindPopup(marker.getPopup().getContent() + popupContent); 
