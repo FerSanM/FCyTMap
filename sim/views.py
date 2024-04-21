@@ -35,7 +35,7 @@ def inicio(request):
 
     # Obtener el día de la semana actual (lunes=0, martes=1, ..., domingo=6)
     dia_actual = datetime.datetime.now().weekday()
-    dia_actual = dia_actual+1
+    dia_actual = dia_actual + 1
     hora_actual = datetime.datetime.now().time()
     relaciones_sala_materia = RelacionMateriaSala.objects.filter(dia_semana=dia_actual, hora_entrada__lte=hora_actual,
                                                                  hora_salida__gte=hora_actual)
@@ -45,24 +45,24 @@ def inicio(request):
     materias_seleccionadas = Materia.objects.filter(relacionusuariomateria__usuario__id=iduser)
     # Consulta utilizando el ORM de Django
     ids_materias_relacionadas = [relacion.materia_id for relacion in relaciones_sala_materia]
-    #print("Los ID de materia",ids_materias_relacionadas)
+    # print("Los ID de materia",ids_materias_relacionadas)
     materias_filtradas = materias_seleccionadas.filter(id__in=ids_materias_relacionadas)
 
     # Ahora materias_filtradas contendrá solo las materias seleccionadas que tienen una relación con una sala en relaciones_sala_materia
-    #print("AAAAAAAAAAAAAAAAAAAAAAA",materias_filtradas)
+    # print("AAAAAAAAAAAAAAAAAAAAAAA",materias_filtradas)
     # Obtener las materias con sus relaciones a salas
-    #print(relaciones_sala_materia)
-    #print(materias_seleccionadas)
+    # print(relaciones_sala_materia)
+    # print(materias_seleccionadas)
     # Iterar sobre las materias resultantes y acceder a sus campos
 
-    #print(relaciones_sala_materia)
-    #print("Total de datos en ubicaciones:", len(ubicaciones))
-    #print("Total de datos en relaciones:",len(relaciones_sala_materia))
-    #print("Seleccion del usuario :",materias_seleccionadas)
+    # print(relaciones_sala_materia)
+    # print("Total de datos en ubicaciones:", len(ubicaciones))
+    # print("Total de datos en relaciones:",len(relaciones_sala_materia))
+    # print("Seleccion del usuario :",materias_seleccionadas)
     return render(request, 'inicio.html', {
         'ubicaciones': ubicaciones,
         'relaciones': relaciones_sala_materia,
-        'materias_usuario':materias_filtradas,
+        'materias_usuario': materias_filtradas,
     })
 
 
@@ -263,6 +263,6 @@ def get_tabla(request):
             else:
                 return JsonResponse({'message': 'No se encontraron datos de la materia para el usuario'})
         else:
-            return JsonResponse({'message': 'No se encontraron relaciones usuario-materia para el usuario'})
+            return JsonResponse({'message': 'No hay datos'})
     else:
         return JsonResponse({'message': 'Usuario no encontrado'})

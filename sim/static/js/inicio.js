@@ -92,8 +92,13 @@ mostrarTabla = async () => {
                 });
             });
 
+        } else if (data.message === "No hay datos") {
+            let opciones = ``;
+            opciones += `<tr>
+                             </tr>`;
+            tablebody.innerHTML = opciones
         } else {
-            alert("datos no encontrados");
+            alert("No hay datos")
         }
     } catch (error) {
         console.log(error);
