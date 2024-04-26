@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 
 # class Usuario(models.Model):
 # idUsuario = models.IntegerField(blank=True, null=True)
@@ -11,7 +11,7 @@ from django.db import models
 # return self.name  # Corregido el método str
 
 
-class User(models.Model):
+class Usuarios(models.Model):
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=50)
     apellido = models.CharField(max_length=50)

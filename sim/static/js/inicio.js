@@ -1,6 +1,6 @@
 const listarMaterias = async (idCarrera, Semestre) => {
     try {
-        const response = await fetch(`materias/${idCarrera}/${Semestre}`);
+        const response = await fetch(`accounts/profile/materias/${idCarrera}/${Semestre}`);
         const data = await response.json();
         console.log(data);
 
@@ -24,7 +24,7 @@ const listarMaterias = async (idCarrera, Semestre) => {
 
 const listarCarreras = async () => {
     try {
-        const response = await fetch("carreras/");
+        const response = await fetch("accounts/profile/carreras/");
         const data = await response.json();
         console.log(data);
 
@@ -66,7 +66,7 @@ const mostrarsemestre = () => {
 
 mostrarTabla = async () => {
     try {
-        const response = await fetch("tabla/");
+        const response = await fetch("accounts/profile/tabla/");
         const data = await response.json();
         console.log(data);
 
@@ -92,13 +92,8 @@ mostrarTabla = async () => {
                 });
             });
 
-        } else if (data.message === "No hay datos") {
-            let opciones = ``;
-            opciones += `<tr>
-                             </tr>`;
-            tablebody.innerHTML = opciones
         } else {
-            alert("No hay datos")
+            alert("datos no encontrados");
         }
     } catch (error) {
         console.log(error);
@@ -168,7 +163,7 @@ const cargaInicial = async () => {
         console.log(csrftoken)
 
         try {
-            const response = await fetch('guardar_materias/', {
+            const response = await fetch('accounts/profile/guardar_materias/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -218,7 +213,7 @@ const cargaInicial = async () => {
             console.log(relacion_id)
 
             // Realizar la solicitud para eliminar la materia
-            const response = await fetch(`eliminar_relacion/${relacion_id}/`, {
+            const response = await fetch(`accounts/profile/eliminar_relacion/${relacion_id}/`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -261,3 +256,4 @@ function hideErrorMessage() {
 window.addEventListener("load", async () => {
     await cargaInicial();
 });
+

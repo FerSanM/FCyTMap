@@ -13,7 +13,6 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 from django.shortcuts import render
 from .models import Materia
-import jwt
 from django.shortcuts import render, redirect
 from .models import RelacionUsuarioMateria
 from django.shortcuts import render
@@ -22,8 +21,8 @@ import json
 from django.views.decorators.csrf import csrf_protect
 import datetime
 from .models import RelacionUsuarioMateria, RelacionMateriaSala
-
-GOOGLE_OAUTH_CLIENT_ID = "425881363668-ch0d9plss8pnoukc95a22rpdj54bgaot.apps.googleusercontent.com"
+from django.contrib.auth.models import User
+GOOGLE_OAUTH_CLIENT_ID = "425881363668-uga1n538hfcmijovqjbu70hnpmne6ij4.apps.googleusercontent.com"
 
 
 def sign_in(request):
@@ -35,42 +34,31 @@ def inicio(request):
 
     # Obtener el día de la semana actual (lunes=0, martes=1, ..., domingo=6)
     dia_actual = datetime.datetime.now().weekday()
-    dia_actual = dia_actual + 1
+    dia_actual = dia_actual+1
     hora_actual = datetime.datetime.now().time()
     relaciones_sala_materia = RelacionMateriaSala.objects.filter(dia_semana=dia_actual, hora_entrada__lte=hora_actual,
                                                                  hora_salida__gte=hora_actual)
-    correo_usuario = request.session.get('user_data', {}).get('email')
-    usuario = User.objects.filter(correo_electronico=correo_usuario).first()
-    iduser = usuario.id
+    #correo_usuario = request.session.get('user_data', {}).get('email')
+    #usuario = User.objects.filter(correo_electronico=correo_usuario).first()
+    #usuarioA = request.user.id
+    #print("Se supone que estos son los datos?",usuarioA)
+
+    iduser = request.user.id
     materias_seleccionadas = Materia.objects.filter(relacionusuariomateria__usuario__id=iduser)
     # Consulta utilizando el ORM de Django
     ids_materias_relacionadas = [relacion.materia_id for relacion in relaciones_sala_materia]
-    # print("Los ID de materia",ids_materias_relacionadas)
+    #print("Los ID de materia",ids_materias_relacionadas)
     materias_filtradas = materias_seleccionadas.filter(id__in=ids_materias_relacionadas)
-
-    # Ahora materias_filtradas contendrá solo las materias seleccionadas que tienen una relación con una sala en relaciones_sala_materia
-    # print("AAAAAAAAAAAAAAAAAAAAAAA",materias_filtradas)
-    # Obtener las materias con sus relaciones a salas
-    # print(relaciones_sala_materia)
-    # print(materias_seleccionadas)
-    # Iterar sobre las materias resultantes y acceder a sus campos
-
-    # print(relaciones_sala_materia)
-    # print("Total de datos en ubicaciones:", len(ubicaciones))
-    # print("Total de datos en relaciones:",len(relaciones_sala_materia))
-    # print("Seleccion del usuario :",materias_seleccionadas)
     return render(request, 'inicio.html', {
         'ubicaciones': ubicaciones,
         'relaciones': relaciones_sala_materia,
-        'materias_usuario': materias_filtradas,
+        'materias_usuario':materias_filtradas,
     })
 
 
 @csrf_exempt
 def auth_receiver(request):
-    """
-    Google calls this URL after the user has signed in with their Google account.
-    """
+
     token = request.POST.get('credential')
 
     try:
@@ -162,9 +150,8 @@ from django.urls import reverse
 
 @csrf_exempt
 def guardar_materias(request):
-    correo_usuario = request.session.get('user_data', {}).get('email')
-    usuario = User.objects.filter(correo_electronico=correo_usuario).first()
-    iduser = usuario.id
+
+    iduser = request.user.id
 
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -237,9 +224,8 @@ def eliminar_relacion(request, relacion_id):
 
 
 def get_tabla(request):
-    correo_usuario = request.session.get('user_data', {}).get('email')
-    usuario = User.objects.filter(correo_electronico=correo_usuario).first()
-
+    usuario = request.user
+    print(usuario)
     if usuario:
         id_usuario = usuario.id
         relaciones_usuario_materia = RelacionUsuarioMateria.objects.filter(usuario_id=id_usuario)
@@ -263,6 +249,6 @@ def get_tabla(request):
             else:
                 return JsonResponse({'message': 'No se encontraron datos de la materia para el usuario'})
         else:
-            return JsonResponse({'message': 'No hay datos'})
+            return JsonResponse({'message': 'No se encontraron relaciones usuario-materia para el usuario'})
     else:
         return JsonResponse({'message': 'Usuario no encontrado'})
