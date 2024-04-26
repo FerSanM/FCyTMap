@@ -29,6 +29,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'sim.apps.SimConfig',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 
 ]
 
@@ -40,6 +44,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "allauth.account.middleware.AccountMiddleware",
+
 ]
 
 ROOT_URLCONF = 'MapaFcyT.urls'
@@ -56,14 +62,22 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.request',
             ],
         },
     },
 ]
 
+
 WSGI_APPLICATION = 'MapaFcyT.wsgi.application'
 
+AUTHENTICATION_BACKENDS = [
 
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+STATICFILES_DIRS = [
+    BASE_DIR / 'sim/static'
+]
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -124,3 +138,17 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 GOOGLE_OAUTH_CLIENT_ID="425881363668-ch0d9plss8pnoukc95a22rpdj54bgaot.apps.googleusercontent.com"
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+a = 2+2
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        },
+        'OAUTH_PKCE_ENABLED': True,
+    }
+}
