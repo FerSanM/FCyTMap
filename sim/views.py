@@ -152,7 +152,7 @@ from django.urls import reverse
 def guardar_materias(request):
 
     iduser = request.user.id
-
+    print("Usuari")
     if request.method == 'POST':
         data = json.loads(request.body)
         materias_seleccionadas = data.get('materia_id', [])
@@ -249,6 +249,6 @@ def get_tabla(request):
             else:
                 return JsonResponse({'message': 'No se encontraron datos de la materia para el usuario'})
         else:
-            return JsonResponse({'message': 'No se encontraron relaciones usuario-materia para el usuario'})
+            return JsonResponse({'message': 'No hay datos'})
     else:
         return JsonResponse({'message': 'Usuario no encontrado'})
