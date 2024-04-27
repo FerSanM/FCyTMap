@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>inicio</title>
+    <title>Inicio</title>
     <script src="https://accounts.google.com/gsi/client" async></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -22,233 +22,237 @@
 </head>
 <body>
 
-    <!--  <div>
+<!--  <div>
            <p>Nombre de Usuario : {{ request.session.user_data.given_name }} </p>
             <p>Email : {{ request.session.user_data.email }}</p>
             <p>Cumpleaños : {{ request.session.user_data.birthdate }}</p>
             <img id="imguser" src="{{ request.session.user_data.picture }}" alt="User picture">
             <p>Click here to <a href="/sign-out">Sign out</a></p>
         </div>-->
-    <nav class="navbar bg-transparent fixed-top">
-        <div class="container-fluid">
-            <div class="row">
-                <!-- Offcanvas -->
-                <div class="col">
-                    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas"
-                            data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
-                        <i class="bi bi-list"></i>
-                    </button>
-                    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar"
-                         aria-labelledby="offcanvasNavbarLabel">
-                        <div class="offcanvas-header">
-                            <h5 class="offcanvas-title" id="offcanvasNavbarLabel">MapaFCyT</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"
-                                    aria-label="Close"></button>
-                        </div>
-                        <div class="offcanvas-body" id="contenidoModal">
-                            <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-                                <li class="nav-item">
-                                    <a class="nav-link active" aria-current="page" href="/materias/">Inicio</a>
-                                </li>
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                                       aria-expanded="false">
-                                        Actividades
-                                    </a>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                               data-bs-target="#modalmaterias">Agregar/Quitar
-                                            Materias</a></li>
+<nav class="navbar bg-transparent fixed-top">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Offcanvas -->
+            <div class="col">
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas"
+                        data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar"
+                     aria-labelledby="offcanvasNavbarLabel">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasNavbarLabel">MapaFCyT</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body" id="contenidoModal">
+                        <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="/materias/">Inicio</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                   aria-expanded="false">
+                                    Actividades
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                           data-bs-target="#modalmaterias">Agregar/Quitar
+                                        Materias</a></li>
 
-                                        <li><a class="dropdown-item" href="#">Agregar Eventos</a></li>
-                                        <li>
-                                            <hr class="dropdown-divider">
-                                        </li>
-                                        <li><a class="dropdown-item" href="#">Something else here</a></li>
-                                    </ul>
+                                    <li><a class="dropdown-item" href="#">Agregar Eventos</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                </ul>
 
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/sign-out">Cerrar Sesion</a>
-                                </li>
-                            </ul>
-                        </div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'account_logout' %}">Cerrar Sesion</a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-                <!-- Barra de búsqueda -->
-                <div class="col-auto">
-                    <form class="d-flex" role="search">
-                        <input class="form-control" type="search" placeholder="Buscar en MapaFCyT" aria-label="Search">
-                        <button class="btn" type="submit">
-                            <i class="bi bi-search"></i> <!-- Icono de búsqueda -->
-                        </button>
-                    </form>
-                </div>
+            </div>
+            <!-- Barra de búsqueda -->
+            <div class="col-auto">
+                <form class="d-flex" role="search">
+                    <input class="form-control" type="search" placeholder="Buscar en MapaFCyT" aria-label="Search">
+                    <button class="btn" type="submit">
+                        <i class="bi bi-search"></i> <!-- Icono de búsqueda -->
+                    </button>
+                </form>
             </div>
         </div>
+    </div>
+    {% for userdatas in userdata %}
         <div>
-            <img id="imguser" src="{{ request.session.user_data.picture }}" alt="User picture">
+            <img id="imguser" src="{{ userdatas.extra_data.picture }}" alt="User Picture">
         </div>
-    </nav>
-    <div class="modal modal-lg fade" id="modalmaterias" data-bs-keyboard="true"
-         tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="false">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">
-                        Agregar Materias</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form method="get" id="forfiltro">
-                        <div class="selmate">
-                            <label for="semestre" class="sellabel">Semestre:</label>
-                            <select class="form-select" name="semestre" id="semestre">
-                            </select>
-                            <label for="carrera" class="sellabel">Carrera:</label>
-                            <select class="form-select" name="carrera" id="carrera"
-                                    aria-label="Default select example">
-                            </select>
-                        </div>
-                    </form>
-                    <br>
-                    <div class="bordercheck">
-                        <div class="check" id="matecon">
-                            <input type="checkbox" name="materias" class="btn-check" id="materias"
-                                   autocomplete="off">
-                            <label class="btn" id="btnmate"
-                                   for="materias"></label>
-                            <br>
-                        </div>
+    {% endfor %}
+</nav>
+<div class="modal modal-lg fade" id="modalmaterias" data-bs-keyboard="true"
+     tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                    Agregar Materias</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="get" id="forfiltro">
+                    <div class="selmate">
+                        <label for="semestre" class="sellabel">Semestre:</label>
+                        <select class="form-select" name="semestre" id="semestre">
+                        </select>
+                        <label for="carrera" class="sellabel">Carrera:</label>
+                        <select class="form-select" name="carrera" id="carrera"
+                                aria-label="Default select example">
+                        </select>
+                    </div>
+                </form>
+                <br>
+                <div class="bordercheck">
+                    <div class="check" id="matecon">
+                        <input type="checkbox" name="materias" class="btn-check" id="materias"
+                               autocomplete="off">
+                        <label class="btn" id="btnmate"
+                               for="materias"></label>
+                        <br>
                     </div>
                 </div>
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th>Materia</th>
-                            <th class="text-center">Semestre</th>
-                            <th class="text-center">Acciones</th>
-                        </tr>
-                        </thead>
-                        <tbody id="tablebody">
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <div class="container-error"><label id="error-container" class="error-message"></label></div>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar
-                    </button>
-                    <button type="submit" class="btn btn-primary" id="btnguar">Agregar</button>
-                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Materia</th>
+                        <th class="text-center">Semestre</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tablebody">
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <div class="container-error"><label id="error-container" class="error-message"></label></div>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar
+                </button>
+                <button type="submit" class="btn btn-primary" id="btnguar">Agregar</button>
             </div>
         </div>
     </div>
-    <div class="modal fade" id="eliminarmodal" tabindex="-1" aria-labelledby="exampleModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Eliminar Materia</h1>
-                </div>
-                <div class="modal-body">
-                    ¿Seguro que Deseas Eliminar esta Materia?
-                    <input type="hidden" id="input-materia-id">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-target="#modalmaterias"
-                            data-bs-toggle="modal">
-                        Volver
-                    </button>
-                    <button type="button" class="btn btn-danger" id="btn-confirmar-eliminacion">Eliminar</button>
-                </div>
+</div>
+<div class="modal fade" id="eliminarmodal" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Eliminar Materia</h1>
+            </div>
+            <div class="modal-body">
+                ¿Seguro que Deseas Eliminar esta Materia?
+                <input type="hidden" id="input-materia-id">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-target="#modalmaterias"
+                        data-bs-toggle="modal">
+                    Volver
+                </button>
+                <button type="button" class="btn btn-danger" id="btn-confirmar-eliminacion">Eliminar</button>
             </div>
         </div>
     </div>
+</div>
 <script src="{% static 'js/inicio.js' %}"></script>
- <div id="map"></div>
+<div id="map"></div>
 <script>
     // Define los límites de movimiento del mapa
     var bounds = L.latLngBounds(
-    L.latLng(-25.453157778381083, -56.445153589817075), // Esquina suroeste
-    L.latLng(-25.454265872490453, -56.44178651283933)  // Esquina noreste
+        L.latLng(-25.453157778381083, -56.445153589817075), // Esquina suroeste
+        L.latLng(-25.454265872490453, -56.44178651283933)  // Esquina noreste
     );
     var map = L.map('map', {
-    maxBounds: bounds,
-    maxBoundsViscosity: 1.0 // Hace que el mapa rebote cuando intentas moverlo fuera de los límites
-    }).setView([ -25.453592270187336,-56.44307543787256], 20);
+        maxBounds: bounds,
+        maxBoundsViscosity: 1.0 // Hace que el mapa rebote cuando intentas moverlo fuera de los límites
+    }).setView([-25.453592270187336, -56.44307543787256], 20);
     var ThunderforestOpenCycleMap = L.tileLayer('https://{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey={apikey}', {
-	attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-	apikey: 'e55fe3a6914d40a5a7fb22d183f3bd4e',
-	maxZoom: 21,
+        attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        apikey: 'e55fe3a6914d40a5a7fb22d183f3bd4e',
+        maxZoom: 21,
         minZoom: 19,
-}).addTo(map);
-     var ubicaciones = [];
-     var relaciones  = [];
-     var usuariorelaciones = [];
-     {% for materia_usuario in materias_usuario %}
-    usuariorelaciones.push([{{ materia_usuario.id }}])
+    }).addTo(map);
+    var ubicaciones = [];
+    var relaciones = [];
+    var usuariorelaciones = [];
+    {% for materia_usuario in materias_usuario %}
+        usuariorelaciones.push([{{ materia_usuario.id }}])
     {% endfor %}
     console.log(usuariorelaciones)
-{% for relacion in relaciones %}
-        relaciones.push(["{{ relacion.materia.descripcion}}",{{ relacion.sala.id }},"{{ relacion.hora_entrada|time:"H:i" }}","{{ relacion.hora_salida|time:"H:i" }}",{{ relacion.dia_semana.id }},"{{ relacion.dia_semana.descripcion }}","{{ relacion.materia.idCarrera.descripcion }}",{{ relacion.materia.id }}]);
+    {% for relacion in relaciones %}
+        relaciones.push(["{{ relacion.materia.descripcion}}", {{ relacion.sala.id }}, "{{ relacion.hora_entrada|time:"H:i" }}", "{{ relacion.hora_salida|time:"H:i" }}", {{ relacion.dia_semana.id }}, "{{ relacion.dia_semana.descripcion }}", "{{ relacion.materia.idCarrera.descripcion }}", {{ relacion.materia.id }}]);
     {% endfor %}
- {% for ubicacion in ubicaciones %}
-            L.marker([{{ ubicacion.latitud }}, {{ ubicacion.longitud }}]).addTo(map)
-                .bindPopup("{{ ubicacion.descripcion }}");
-            ubicaciones.push([{{ ubicacion.latitud }}, {{ ubicacion.longitud }},"{{ ubicacion.descripcion }}",{{ ubicacion.id }}]);
- {% endfor %}
+    {% for ubicacion in ubicaciones %}
+        L.marker([{{ ubicacion.latitud }}, {{ ubicacion.longitud }}]).addTo(map)
+            .bindPopup("{{ ubicacion.descripcion }}");
+        ubicaciones.push([{{ ubicacion.latitud }}, {{ ubicacion.longitud }}, "{{ ubicacion.descripcion }}", {{ ubicacion.id }}]);
+    {% endfor %}
 
     L.control.scale().addTo(map);
-        console.log("AULAS",ubicaciones)
-        console.log("AULAS CON MATERIAS",relaciones)
+    console.log("AULAS", ubicaciones)
+    console.log("AULAS CON MATERIAS", relaciones)
+
     function existeCoincidencia() {
-            if (usuariorelaciones.length === 0) {
-             return false; // No hay coincidencia
-    }
-    for (var i = 0; i < usuariorelaciones[0].length; i++) {
-        if (relaciones.some(function(relacion) {
-            return relacion[7] === usuariorelaciones[0][i];
-        })) {
-            return true; // Hay coincidencia
+        if (usuariorelaciones.length === 0) {
+            return false; // No hay coincidencia
         }
+        for (var i = 0; i < usuariorelaciones[0].length; i++) {
+            if (relaciones.some(function (relacion) {
+                return relacion[7] === usuariorelaciones[0][i];
+            })) {
+                return true; // Hay coincidencia
+            }
+        }
+        return false; // No hay coincidencia
     }
-    return false; // No hay coincidencia
-}
-ubicaciones.forEach(function(ubicacion) {
-    var marker = L.marker([ubicacion[0], ubicacion[1]]).addTo(map);
-    marker.bindPopup(ubicacion[2]);
-    var relacionesDeSala = relaciones.filter(function(relacion) {
-        return relacion[1] === ubicacion[3];
-    });
 
-relacionesDeSala.forEach(function(relacion) {
-        var materiaContent = "<b>Materia:</b> " + relacion[0];
-        var desdeContent = "<b>Desde:</b> " + relacion[2];
-        var hastaContent = "<b>Hasta:</b> " + relacion[3];
-        var carreraContent = "<b>Carrera:</b> " + relacion[6];
+    ubicaciones.forEach(function (ubicacion) {
+        var marker = L.marker([ubicacion[0], ubicacion[1]]).addTo(map);
+        marker.bindPopup(ubicacion[2]);
+        var relacionesDeSala = relaciones.filter(function (relacion) {
+            return relacion[1] === ubicacion[3];
+        });
 
-        var hayClase = existeCoincidencia();
+        relacionesDeSala.forEach(function (relacion) {
+            var materiaContent = "<b>Materia:</b> " + relacion[0];
+            var desdeContent = "<b>Desde:</b> " + relacion[2];
+            var hastaContent = "<b>Hasta:</b> " + relacion[3];
+            var carreraContent = "<b>Carrera:</b> " + relacion[6];
+
+            var hayClase = existeCoincidencia();
 
 // Construir el contenido del popup según si hay clase o no
-var popupContent;
-  if (hayClase && relacion[7] === usuariorelaciones[0][0]) {
-        popupContent = "<p>Tienes Clase Ahora</p>" + materiaContent + "<br>" + desdeContent + "<br>" + hastaContent + "<br>" + carreraContent;
-    } else {
-        popupContent = materiaContent + "<br>" + desdeContent + "<br>" + hastaContent + "<br>" + carreraContent;
-    }
+            var popupContent;
+            if (hayClase && relacion[7] === usuariorelaciones[0][0]) {
+                popupContent = "<p>Tienes Clase Ahora</p>" + materiaContent + "<br>" + desdeContent + "<br>" + hastaContent + "<br>" + carreraContent;
+            } else {
+                popupContent = materiaContent + "<br>" + desdeContent + "<br>" + hastaContent + "<br>" + carreraContent;
+            }
 
-        
-        // Agregar el contenido al popup
-        marker.bindPopup(marker.getPopup().getContent() + popupContent); 
+
+            // Agregar el contenido al popup
+            marker.bindPopup(marker.getPopup().getContent() + popupContent);
+        });
     });
-});
-var customControl = L.control.zoom({
-    position: 'bottomright' 
-});
-customControl.addTo(map);
-map.removeControl(map.zoomControl);
+    var customControl = L.control.zoom({
+        position: 'bottomright'
+    });
+    customControl.addTo(map);
+    map.removeControl(map.zoomControl);
 </script>
 </body>
 </html>

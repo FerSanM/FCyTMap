@@ -7,9 +7,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-d#^+6l132%^!j7az-ge+9(3&f5h$s%t*)ci4u6ky#z^2j(4@55'
 
@@ -17,7 +14,6 @@ SECRET_KEY = 'django-insecure-d#^+6l132%^!j7az-ge+9(3&f5h$s%t*)ci4u6ky#z^2j(4@55
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -86,12 +82,11 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "is2",
         "USER": "postgres",
-        "PASSWORD": "5675437",
+        "PASSWORD": "260818",
         "HOST": "127.0.0.1",
         "PORT": "5432",
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -110,7 +105,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -138,7 +132,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 GOOGLE_OAUTH_CLIENT_ID = "425881363668-ch0d9plss8pnoukc95a22rpdj54bgaot.apps.googleusercontent.com"
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
-a = 2+2
+
+LOGIN_REDIRECT_URL = 'inicio'
+ACCOUNT_LOGOUT_REDIRECT_URL = 'account_login'
+a = 2 + 2
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'SCOPE': [

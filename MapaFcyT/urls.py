@@ -8,5 +8,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('sim.urls')),
     path('accounts/', include('allauth.urls')),
-    path('accounts/profile/', views.inicio, name='inicio'),
+    path('inicio/', views.inicio, name='inicio'),
 ]

@@ -183,6 +183,11 @@ const cargaInicial = async () => {
 
             const data = await response.json();
             console.log('Materias guardadas correctamente:', data);
+            // Desmarcar todos los checkboxes
+            checkboxess.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+
 
             document.getElementById('error-container').textContent = '';
 

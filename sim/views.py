@@ -1,5 +1,6 @@
 import os
 
+from django.db import connection
 from django.views.decorators.http import require_http_methods
 
 from .models import User, Carrera
@@ -22,6 +23,8 @@ from django.views.decorators.csrf import csrf_protect
 import datetime
 from .models import RelacionUsuarioMateria, RelacionMateriaSala
 from django.contrib.auth.models import User
+from allauth.socialaccount.models import SocialAccount
+
 GOOGLE_OAUTH_CLIENT_ID = "425881363668-uga1n538hfcmijovqjbu70hnpmne6ij4.apps.googleusercontent.com"
 
 
@@ -30,35 +33,38 @@ def sign_in(request):
 
 
 def inicio(request):
+    usuario = request.user
     ubicaciones = Sala.objects.all()
+
+    if usuario.is_authenticated:
+        userdata = SocialAccount.objects.all()
 
     # Obtener el día de la semana actual (lunes=0, martes=1, ..., domingo=6)
     dia_actual = datetime.datetime.now().weekday()
-    dia_actual = dia_actual+1
+    dia_actual = dia_actual + 1
     hora_actual = datetime.datetime.now().time()
     relaciones_sala_materia = RelacionMateriaSala.objects.filter(dia_semana=dia_actual, hora_entrada__lte=hora_actual,
                                                                  hora_salida__gte=hora_actual)
-    #correo_usuario = request.session.get('user_data', {}).get('email')
-    #usuario = User.objects.filter(correo_electronico=correo_usuario).first()
-    #usuarioA = request.user.id
-    #print("Se supone que estos son los datos?",usuarioA)
-
+    # correo_usuario = request.session.get('user_data', {}).get('email')
+    # usuario = User.objects.filter(correo_electronico=correo_usuario).first()
+    # usuarioA = request.user.id
+    # print("Se supone que estos son los datos?",usuarioA)
     iduser = request.user.id
     materias_seleccionadas = Materia.objects.filter(relacionusuariomateria__usuario__id=iduser)
     # Consulta utilizando el ORM de Django
     ids_materias_relacionadas = [relacion.materia_id for relacion in relaciones_sala_materia]
-    #print("Los ID de materia",ids_materias_relacionadas)
+    # print("Los ID de materia",ids_materias_relacionadas)
     materias_filtradas = materias_seleccionadas.filter(id__in=ids_materias_relacionadas)
     return render(request, 'inicio.html', {
         'ubicaciones': ubicaciones,
         'relaciones': relaciones_sala_materia,
-        'materias_usuario':materias_filtradas,
+        'materias_usuario': materias_filtradas,
+        'userdata': userdata,
     })
 
 
 @csrf_exempt
 def auth_receiver(request):
-
     token = request.POST.get('credential')
 
     try:
@@ -150,7 +156,6 @@ from django.urls import reverse
 
 @csrf_exempt
 def guardar_materias(request):
-
     iduser = request.user.id
     print("Usuari")
     if request.method == 'POST':
