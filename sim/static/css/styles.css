@@ -133,3 +133,33 @@ body, html {
     align-items: center;
 
 }
+
+.div-login {
+    background-color: rgba(255, 255, 255, 0.62);
+    align-items: center;
+    flex-direction: column;
+    display: flex;
+    justify-content: center;
+    padding: 35px 20px 35px 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-left: 30%;
+    margin-right: 30%;
+    border-radius: 15px;
+}
+
+#boton-google {
+    width: 300px;
+}
+
+.texto-login {
+    text-decoration: none;
+    font-size: 12px;
+    color: #000;
+}
+
+.login-body {
+    display: flex;
+    background-image: url("../img/Login-background.png");
+    background-size: cover;
+    align-items: center;
+}

@@ -37,7 +37,7 @@ def inicio(request):
     ubicaciones = Sala.objects.all()
 
     if usuario.is_authenticated:
-        userdata = SocialAccount.objects.all()
+        userdata = SocialAccount.objects.filter(user_id=usuario.id)
 
     # Obtener el día de la semana actual (lunes=0, martes=1, ..., domingo=6)
     dia_actual = datetime.datetime.now().weekday()
@@ -100,6 +100,10 @@ def sign_out(request):
     del request.session['user_data']
     print("Sesion Cerrada")
     return redirect('sign_in')
+
+
+def login(request):
+    return render(request, 'login.html')
 
 
 """
@@ -230,7 +234,6 @@ def eliminar_relacion(request, relacion_id):
 
 def get_tabla(request):
     usuario = request.user
-    print(usuario)
     if usuario:
         id_usuario = usuario.id
         relaciones_usuario_materia = RelacionUsuarioMateria.objects.filter(usuario_id=id_usuario)

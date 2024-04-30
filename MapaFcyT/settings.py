@@ -132,9 +132,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 GOOGLE_OAUTH_CLIENT_ID = "425881363668-ch0d9plss8pnoukc95a22rpdj54bgaot.apps.googleusercontent.com"
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
-
 LOGIN_REDIRECT_URL = 'inicio'
-ACCOUNT_LOGOUT_REDIRECT_URL = 'account_login'
+ACCOUNT_LOGOUT_REDIRECT_URL = 'login'
+ACCOUNT_LOGIN_URL = 'login'
 a = 2 + 2
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
