@@ -62,10 +62,15 @@ body, html {
     padding-left: 10px;
 }
 
-.col {
+.col-auto {
     display: flex;
     padding-right: 0px;
     padding-left: 0px;
+}
+
+.col {
+    display: flex;
+
 }
 
 .row {
@@ -162,4 +167,39 @@ body, html {
     background-image: url("../img/Login-background.png");
     background-size: cover;
     align-items: center;
+}
+
+/* RESPONSIVE EN TELEFONOS*/
+@media (max-width: 576px) {
+    .container-fluid {
+        width: 75% !important;
+    }
+
+    .row {
+        width: 100%;
+    }
+
+    .col {
+        width: 100%;
+        padding-right: 0;
+    }
+
+    .d-flex {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .form-control {
+        font-size: 12px;
+        width: 100% !important;
+        padding-right: 0;
+    }
+
+    #btn-buscar {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+
 }
