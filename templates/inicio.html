@@ -213,7 +213,46 @@
         minZoom: 18,
     }).addTo(map);
     
+document.addEventListener("DOMContentLoaded", function() {
+    var highlightedMarker = null;
 
+    document.getElementById("searchForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        var searchInput = document.getElementById("searchInput").value.toLowerCase();
+        var matchingMarker = null;
+
+        // Verificar si map está definido y es una instancia de Leaflet Map
+        if (typeof map !== 'undefined' && map instanceof L.Map) {
+            map.eachLayer(function(layer) {
+                if (layer instanceof L.Marker && layer.getPopup()) { // Verificar si es un marcador y tiene un popup
+                    var popupContent = layer.getPopup().getContent();
+                    if (popupContent && popupContent.toLowerCase().includes(searchInput)) {
+                        matchingMarker = layer;
+                        return;
+                    }
+                }
+            });
+        } else {
+            console.error('Map is not defined or is not an instance of Leaflet Map.');
+            return;
+        }
+
+        if (!matchingMarker) {
+            alert("No se encontraron coincidencias en los marcadores.");
+            return;
+        }
+
+        if (highlightedMarker) {
+            highlightedMarker.setIcon(originalIcon);
+        }
+
+        matchingMarker.setIcon(greenIcon);
+        highlightedMarker = matchingMarker;
+    });
+});
+
+   
     var ubicaciones = [];
     var relaciones = [];
     var usuariorelaciones = [];
