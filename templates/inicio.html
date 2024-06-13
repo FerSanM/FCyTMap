@@ -77,9 +77,10 @@
                 </div>
             </div>
             <!-- Barra de búsqueda -->
-            <div class="col">
-                <form class="d-flex" role="search">
-                    <input class="form-control" type="search" placeholder="Buscar en MapaFCyT" aria-label="Search">
+            <div class="col-auto">
+                <form id="searchForm" class="d-flex" role="search">
+                    <input id="searchInput" class="form-control" list="suggestions" type="search" placeholder="Buscar en MapaFCyT" aria-label="Search">
+<datalist id="suggestions"></datalist>
                     <button class="btn" type="submit" id="btn-buscar">
                         <i class="bi bi-search"></i> <!-- Icono de búsqueda -->
                     </button>
@@ -172,7 +173,30 @@
 <script src="{% static 'js/inicio.js' %}"></script>
 <div id="map"></div>
 <script>
-    // Define los límites de movimiento del mapa
+      var greenIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+    var orangeIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+    var originalIcon = L.icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
     var bounds = L.latLngBounds(
         L.latLng(-25.453157778381083, -56.445153589817075), // Esquina suroeste
         L.latLng(-25.454265872490453, -56.44178651283933)  // Esquina noreste
@@ -181,12 +205,15 @@
         //maxBounds: bounds,
         //maxBoundsViscosity: 1.0 // Hace que el mapa rebote cuando intentas moverlo fuera de los límites
     }).setView([-25.453592270187336, -56.44307543787256], 20);
+    
     var ThunderforestOpenCycleMap = L.tileLayer('https://{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey={apikey}', {
         attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         apikey: 'e55fe3a6914d40a5a7fb22d183f3bd4e',
         maxZoom: 21,
         minZoom: 18,
     }).addTo(map);
+    
+
     var ubicaciones = [];
     var relaciones = [];
     var usuariorelaciones = [];
@@ -221,34 +248,41 @@
         return false; // No hay coincidencia
     }
 
-    ubicaciones.forEach(function (ubicacion) {
-        var marker = L.marker([ubicacion[0], ubicacion[1]]).addTo(map);
-        marker.bindPopup(ubicacion[2]);
-        var relacionesDeSala = relaciones.filter(function (relacion) {
-            return relacion[1] === ubicacion[3];
-        });
-
-        relacionesDeSala.forEach(function (relacion) {
-            var materiaContent = "<b>Materia:</b> " + relacion[0];
-            var desdeContent = "<b>Desde:</b> " + relacion[2];
-            var hastaContent = "<b>Hasta:</b> " + relacion[3];
-            var carreraContent = "<b>Carrera:</b> " + relacion[6];
-
-            var hayClase = existeCoincidencia();
-
-// Construir el contenido del popup según si hay clase o no
-            var popupContent;
-            if (hayClase && relacion[7] === usuariorelaciones[0][0]) {
-                popupContent = "<p>Tienes Clase Ahora</p>" + materiaContent + "<br>" + desdeContent + "<br>" + hastaContent + "<br>" + carreraContent;
-            } else {
-                popupContent = materiaContent + "<br>" + desdeContent + "<br>" + hastaContent + "<br>" + carreraContent;
-            }
-
-
-            // Agregar el contenido al popup
-            marker.bindPopup(marker.getPopup().getContent() + popupContent);
-        });
+   ubicaciones.forEach(function (ubicacion) {
+    var marker = L.marker([ubicacion[0], ubicacion[1]]).addTo(map);
+    marker.bindPopup(ubicacion[2]);
+    var relacionesDeSala = relaciones.filter(function (relacion) {
+        return relacion[1] === ubicacion[3];
     });
+
+    relacionesDeSala.forEach(function (relacion) {
+        var materiaContent = "</br><b>Materia:</b> " + relacion[0];
+        var desdeContent = "<b>Desde:</b> " + relacion[2];
+        var hastaContent = "<b>Hasta:</b> " + relacion[3];
+        var carreraContent = "<b>Carrera:</b> " + relacion[6];
+
+        var hayClase = existeCoincidencia();
+
+        // Inicializamos popupContent con el contenido estándar
+        var popupContent = materiaContent + "<br>" + desdeContent + "<br>" + hastaContent + "<br>" + carreraContent;
+
+        // Recorremos todas las relaciones del usuario
+        for (var i = 0; i < usuariorelaciones.length; i++) {
+            if (hayClase && relacion[7] === usuariorelaciones[i][0]) {
+                popupContent = "<p>Tienes Clase Ahora</p>" + materiaContent + "<br>" + desdeContent + "<br>" + hastaContent + "<br>" + carreraContent;
+                marker.setIcon(orangeIcon);
+                break; // Si ya encontramos una coincidencia, salimos del bucle
+            }
+        }
+
+        // Agregar el contenido al popup
+        marker.bindPopup(marker.getPopup().getContent() + popupContent);
+    });
+});
+
+  
+    
+    
     var customControl = L.control.zoom({
         position: 'bottomright'
     });
