@@ -8,6 +8,9 @@
     <script src="https://accounts.google.com/gsi/client" async></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/css/tempus-dominus.min.css"
+          crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
@@ -61,7 +64,8 @@
                                            data-bs-target="#modalmaterias">Agregar/Quitar
                                         Materias</a></li>
 
-                                    <li><a class="dropdown-item" href="#">Agregar Eventos</a></li>
+                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                           data-bs-target="#modaleventos">Agregar Eventos</a></li>
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
@@ -79,14 +83,55 @@
             <!-- Barra de búsqueda -->
             <div class="col-auto">
                 <form id="searchForm" class="d-flex" role="search">
-                    <input id="searchInput" class="form-control" list="suggestions" type="search" placeholder="Buscar en MapaFCyT" aria-label="Search">
-<datalist id="suggestions"></datalist>
+                    <input id="searchInput" class="form-control" list="suggestions" type="search"
+                           placeholder="Buscar en MapaFCyT" aria-label="Search">
+                    <datalist id="suggestions"></datalist>
                     <button class="btn" type="submit" id="btn-buscar">
                         <i class="bi bi-search"></i> <!-- Icono de búsqueda -->
                     </button>
                 </form>
             </div>
         </div>
+    </div>
+    <div class="btn-group dropstart">
+        <a class="btn btn-notificacion" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-bell"></i>
+        </a>
+        <ul class="dropdown-menu">
+            <li class="li-noti">
+                <a class="dropdown-item" href="#">
+                    <div class="noti-container">
+                        <div class="icon-noti">
+                            <i class="bi bi-journal-bookmark-fill"></i>
+                        </div>
+                        <div class="content-noti">
+                            <span style="font-size: 12px">Tu Evento esta por Comenzar</span><br>
+                            <span><b>Examen Calculo</b></span><br>
+                            <span style="font-size: 12px">Dentro de 5min</span>
+                        </div>
+                    </div>
+                </a>
+            </li>
+            <li class="li-noti">
+                <a class="dropdown-item" href="#">
+                    <div class="noti-container">
+                        <div class="icon-noti">
+                            <i class="bi bi-journal-bookmark-fill"></i>
+                        </div>
+                        <div class="content-noti">
+                            <span style="font-size: 12px">Tu Evento esta por Comenzar</span><br>
+                            <span><b>Examen Redes</b></span><br>
+                            <span style="font-size: 12px">Dentro de 12h</span>
+                        </div>
+                    </div>
+                </a>
+            </li>
+            <li>
+                <footer class="footer-noti">
+                    <a href="#">Ver Más</a>
+                </footer>
+            </li>
+        </ul>
     </div>
     {% for userdatas in userdata %}
         <div>
@@ -149,6 +194,57 @@
         </div>
     </div>
 </div>
+<div class="modal modal-lg fade" id="modaleventos" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Eventos</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container-agregar">
+                    <b>Aqui puedes Agregar tus Eventos:</b>
+                    <button type="button" id="btnaddevent" class="btn btn-success" data-bs-toggle="modal"
+                            data-bs-target="#agregarevento"><i
+                            class="bi bi-plus-circle-fill"></i> Agregar Evento
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Evento</th>
+                            <th class="text-center">Fecha</th>
+                            <th class="text-center">Lugar</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tableeventos">
+                        <tr>
+                            <td>${dato.Evento}</td>
+                            <td class="text-center">${dato.Fecha}</td>
+                            <td class="text-center">${dato.Lugar}</td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-danger btn-eliminarevent"
+                                        data-materia-id="${dato.id}"
+                                        data-bs-toggle="modal" data-bs-target="#eliminarmodal"><i
+                                        class="bi bi-trash-fill"></i></button>
+                                <button type="button" class="btn btn-primary btn-editarevent"
+                                        data-materia-id="${dato.id}"
+                                        data-bs-toggle="modal" data-bs-target="#eliminarmodal"><i
+                                        class="bi bi-pencil-square"></i></button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="modal fade" id="eliminarmodal" tabindex="-1" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
     <div class="modal-dialog">
@@ -170,33 +266,135 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="agregarevento" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Agregar Evento</h1>
+            </div>
+            <div class="modal-body">
+                <form class="needs-validation">
+                    <div class="mb-3">
+                        <label for="inputEvento" class="form-label">Nombre del Evento</label>
+                        <input type="text" class="form-control form-evento" id="inputEvento" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="validationCustom" class="form-label">Lugar</label>
+                        <select class="form-select" id="validationCustom" required>
+                            <option selected disabled value="">Choose...</option>
+                            <option>...</option>
+                        </select>
+                        <div class="invalid-feedback">
+                            Please select a valid state.
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="datetimefecha" class="form-label">Selecciona la Fecha del Evento</label>
+                        <div class="input-group" id="datetimefecha" data-td-target-input="nearest"
+                             data-td-target-toggle="nearest">
+                            <input type="text" class="form-control datetimepicker-input"
+                                   data-td-target="#datetimefecha" required/>
+                            <span class="input-group-text" data-td-target="#datetimepicker"
+                                  data-td-toggle="datetimepicker">
+                                    <i class="bi bi-calendar-event-fill"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="datetimenotificacion" class="form-label">Notificacion del Evento</label>
+                        <div class="input-group" id="datetimenotificacion" data-td-target-input="nearest"
+                             data-td-target-toggle="nearest">
+                            <input type="text" class="form-control datetimepicker-input"
+                                   data-td-target="#datetimenotificacion" required/>
+                            <span class="input-group-text" data-td-target="#datetimepicker"
+                                  data-td-toggle="datetimepicker">
+                                    <i class="bi bi-calendar-event-fill"></i>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-target="#modaleventos"
+                        data-bs-toggle="modal">
+                    Volver
+                </button>
+                <button type="button" class="btn btn-primary" id="btn-agregarevento">Agregar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/js/tempus-dominus.min.js"
+        crossorigin="anonymous"></script>
 <script src="{% static 'js/inicio.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        new tempusDominus.TempusDominus(document.getElementById('datetimenotificacion'),
+            {
+                display: {
+                    icons: {
+                        type: 'icons',
+                        time: 'bi bi-clock',
+                        date: 'bi bi-calendar4',
+                        up: 'bi bi-arrow-up',
+                        down: 'bi bi-arrow-down',
+                        previous: 'bi bi-chevron-left',
+                        next: 'bi bi-chevron-right',
+                        today: 'fa-solid fa-calendar-check',
+                        clear: 'fa-solid fa-trash',
+                        close: 'fa-solid fa-xmark'
+                    }
+                }
+
+            })
+        new tempusDominus.TempusDominus(document.getElementById('datetimefecha'),
+            {
+                display: {
+                    icons: {
+                        type: 'icons',
+                        time: 'bi bi-clock',
+                        date: 'bi bi-calendar4',
+                        up: 'bi bi-arrow-up',
+                        down: 'bi bi-arrow-down',
+                        previous: 'bi bi-chevron-left',
+                        next: 'bi bi-chevron-right',
+                        today: 'fa-solid fa-calendar-check',
+                        clear: 'fa-solid fa-trash',
+                        close: 'fa-solid fa-xmark'
+                    }
+                }
+
+            })
+
+    });
+</script>
 <div id="map"></div>
 <script>
-      var greenIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
+    var greenIcon = new L.Icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+    });
     var orangeIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+    });
     var originalIcon = L.icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+    });
     var bounds = L.latLngBounds(
         L.latLng(-25.453157778381083, -56.445153589817075), // Esquina suroeste
         L.latLng(-25.454265872490453, -56.44178651283933)  // Esquina noreste
@@ -205,54 +403,54 @@
         //maxBounds: bounds,
         //maxBoundsViscosity: 1.0 // Hace que el mapa rebote cuando intentas moverlo fuera de los límites
     }).setView([-25.453592270187336, -56.44307543787256], 20);
-    
+
     var ThunderforestOpenCycleMap = L.tileLayer('https://{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey={apikey}', {
         attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         apikey: 'e55fe3a6914d40a5a7fb22d183f3bd4e',
         maxZoom: 21,
         minZoom: 18,
     }).addTo(map);
-    
-document.addEventListener("DOMContentLoaded", function() {
-    var highlightedMarker = null;
 
-    document.getElementById("searchForm").addEventListener("submit", function(event) {
-        event.preventDefault();
+    document.addEventListener("DOMContentLoaded", function () {
+        var highlightedMarker = null;
 
-        var searchInput = document.getElementById("searchInput").value.toLowerCase();
-        var matchingMarker = null;
+        document.getElementById("searchForm").addEventListener("submit", function (event) {
+            event.preventDefault();
 
-        // Verificar si map está definido y es una instancia de Leaflet Map
-        if (typeof map !== 'undefined' && map instanceof L.Map) {
-            map.eachLayer(function(layer) {
-                if (layer instanceof L.Marker && layer.getPopup()) { // Verificar si es un marcador y tiene un popup
-                    var popupContent = layer.getPopup().getContent();
-                    if (popupContent && popupContent.toLowerCase().includes(searchInput)) {
-                        matchingMarker = layer;
-                        return;
+            var searchInput = document.getElementById("searchInput").value.toLowerCase();
+            var matchingMarker = null;
+
+            // Verificar si map está definido y es una instancia de Leaflet Map
+            if (typeof map !== 'undefined' && map instanceof L.Map) {
+                map.eachLayer(function (layer) {
+                    if (layer instanceof L.Marker && layer.getPopup()) { // Verificar si es un marcador y tiene un popup
+                        var popupContent = layer.getPopup().getContent();
+                        if (popupContent && popupContent.toLowerCase().includes(searchInput)) {
+                            matchingMarker = layer;
+                            return;
+                        }
                     }
-                }
-            });
-        } else {
-            console.error('Map is not defined or is not an instance of Leaflet Map.');
-            return;
-        }
+                });
+            } else {
+                console.error('Map is not defined or is not an instance of Leaflet Map.');
+                return;
+            }
 
-        if (!matchingMarker) {
-            alert("No se encontraron coincidencias en los marcadores.");
-            return;
-        }
+            if (!matchingMarker) {
+                alert("No se encontraron coincidencias en los marcadores.");
+                return;
+            }
 
-        if (highlightedMarker) {
-            highlightedMarker.setIcon(originalIcon);
-        }
+            if (highlightedMarker) {
+                highlightedMarker.setIcon(originalIcon);
+            }
 
-        matchingMarker.setIcon(greenIcon);
-        highlightedMarker = matchingMarker;
+            matchingMarker.setIcon(greenIcon);
+            highlightedMarker = matchingMarker;
+        });
     });
-});
 
-   
+
     var ubicaciones = [];
     var relaciones = [];
     var usuariorelaciones = [];
@@ -287,41 +485,39 @@ document.addEventListener("DOMContentLoaded", function() {
         return false; // No hay coincidencia
     }
 
-   ubicaciones.forEach(function (ubicacion) {
-    var marker = L.marker([ubicacion[0], ubicacion[1]]).addTo(map);
-    marker.bindPopup(ubicacion[2]);
-    var relacionesDeSala = relaciones.filter(function (relacion) {
-        return relacion[1] === ubicacion[3];
-    });
+    ubicaciones.forEach(function (ubicacion) {
+        var marker = L.marker([ubicacion[0], ubicacion[1]]).addTo(map);
+        marker.bindPopup(ubicacion[2]);
+        var relacionesDeSala = relaciones.filter(function (relacion) {
+            return relacion[1] === ubicacion[3];
+        });
 
-    relacionesDeSala.forEach(function (relacion) {
-        var materiaContent = "</br><b>Materia:</b> " + relacion[0];
-        var desdeContent = "<b>Desde:</b> " + relacion[2];
-        var hastaContent = "<b>Hasta:</b> " + relacion[3];
-        var carreraContent = "<b>Carrera:</b> " + relacion[6];
+        relacionesDeSala.forEach(function (relacion) {
+            var materiaContent = "</br><b>Materia:</b> " + relacion[0];
+            var desdeContent = "<b>Desde:</b> " + relacion[2];
+            var hastaContent = "<b>Hasta:</b> " + relacion[3];
+            var carreraContent = "<b>Carrera:</b> " + relacion[6];
 
-        var hayClase = existeCoincidencia();
+            var hayClase = existeCoincidencia();
 
-        // Inicializamos popupContent con el contenido estándar
-        var popupContent = materiaContent + "<br>" + desdeContent + "<br>" + hastaContent + "<br>" + carreraContent;
+            // Inicializamos popupContent con el contenido estándar
+            var popupContent = materiaContent + "<br>" + desdeContent + "<br>" + hastaContent + "<br>" + carreraContent;
 
-        // Recorremos todas las relaciones del usuario
-        for (var i = 0; i < usuariorelaciones.length; i++) {
-            if (hayClase && relacion[7] === usuariorelaciones[i][0]) {
-                popupContent = "<p>Tienes Clase Ahora</p>" + materiaContent + "<br>" + desdeContent + "<br>" + hastaContent + "<br>" + carreraContent;
-                marker.setIcon(orangeIcon);
-                break; // Si ya encontramos una coincidencia, salimos del bucle
+            // Recorremos todas las relaciones del usuario
+            for (var i = 0; i < usuariorelaciones.length; i++) {
+                if (hayClase && relacion[7] === usuariorelaciones[i][0]) {
+                    popupContent = "<p>Tienes Clase Ahora</p>" + materiaContent + "<br>" + desdeContent + "<br>" + hastaContent + "<br>" + carreraContent;
+                    marker.setIcon(orangeIcon);
+                    break; // Si ya encontramos una coincidencia, salimos del bucle
+                }
             }
-        }
 
-        // Agregar el contenido al popup
-        marker.bindPopup(marker.getPopup().getContent() + popupContent);
+            // Agregar el contenido al popup
+            marker.bindPopup(marker.getPopup().getContent() + popupContent);
+        });
     });
-});
 
-  
-    
-    
+
     var customControl = L.control.zoom({
         position: 'bottomright'
     });
