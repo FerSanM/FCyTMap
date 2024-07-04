@@ -21,6 +21,57 @@ const listarMaterias = async (idCarrera, Semestre) => {
         console.log(error);
     }
 }
+const listarNotificaciones = async () => {
+    try {
+        const response = await fetch("notificaciones/");
+        const data = await response.json();
+        console.log(data);
+
+        if (data.message === "Success") {
+            let opciones = ``;
+            data.notificaciones.forEach((notificacion) => {
+                const fechaFormateada = formatDate(notificacion.fecha_actividad);
+                const diasFaltantes = calculateDaysDifference(notificacion.fecha_actividad);
+                let mensajeDias = '';
+                if (new Date() >= new Date(notificacion.fecha_actividad)) {
+                    mensajeDias = 'Finalizado';
+                } else {
+                    mensajeDias = `Faltan ${diasFaltantes} días para el evento`;
+                }
+                opciones += `
+                    <li class="li-noti">
+                        <a class="dropdown-item" href="#">
+                            <div class="noti-container">
+                                <div class="icon-noti">
+                                    <i class="bi bi-journal-bookmark-fill"></i>
+                                </div>
+                                <div class="content-noti">
+                                    <span style="font-size: 12px">Notificacion de Evento</span><br>
+                                    <span><b>${notificacion.descripcion}</b></span><br>
+                                     <span style="font-size: 12px">${mensajeDias}</span>
+                                </div>
+                            </div>
+                        </a>
+                    </li>`;
+            });
+
+            // Agregar el último <li> al final
+            opciones += `
+                <li>
+                    <footer class="footer-noti">
+                        <a href="#">Ver Más</a>
+                    </footer>
+                </li>`;
+
+            document.getElementById('notif').innerHTML = opciones;
+
+        } else {
+            alert("Datos no encontrados");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+};
 
 const listarCarreras = async () => {
     try {
@@ -127,7 +178,7 @@ const cargaInicial = async () => {
     await listarCarreras();
     await mostrarsemestre();
     await mostrarTabla();
-
+    await listarNotificaciones();
     await listarMaterias(idCarreraInicial, semestreInicial); // Llamar a listarMaterias con valores iniciales
 
     carrera.addEventListener("change", async (event) => {
@@ -267,3 +318,24 @@ window.addEventListener("load", async () => {
     await cargaInicial();
 });
 
+const formatDate = (isoDate) => {
+    const date = new Date(isoDate);
+    const optionsDate = {
+        day: 'numeric',
+        month: 'long'
+    };
+    const optionsTime = {
+        hour: 'numeric',
+        minute: 'numeric'
+    };
+    const formattedDate = date.toLocaleDateString('es-ES', optionsDate);
+    const formattedTime = date.toLocaleTimeString('es-ES', optionsTime);
+    return `${formattedDate}, ${formattedTime}`;
+};
+const calculateDaysDifference = (futureDate) => {
+    const oneDay = 24 * 60 * 60 * 1000; // horas * minutos * segundos * milisegundos
+    const currentDate = new Date();
+    const targetDate = new Date(futureDate);
+    const diffDays = Math.round((targetDate - currentDate) / oneDay);
+    return diffDays;
+};

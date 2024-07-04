@@ -46,7 +46,9 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'MapaFcyT.urls'
-
+CSRF_TRUSTED_ORIGINS = [
+    'https://civil-firefly-readily.ngrok-free.app',
+]
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -82,7 +84,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "is2",
         "USER": "postgres",
-        "PASSWORD": "260818",
+        "PASSWORD": "5675437",
         "HOST": "127.0.0.1",
         "PORT": "5432",
     }
@@ -135,7 +137,7 @@ SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 LOGIN_REDIRECT_URL = 'inicio'
 ACCOUNT_LOGOUT_REDIRECT_URL = 'login'
 ACCOUNT_LOGIN_URL = 'login'
-a = 2 + 2
+
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'SCOPE': [

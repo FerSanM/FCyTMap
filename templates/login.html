@@ -1,3 +1,5 @@
+login
+[21:40]
 {% load i18n %}
 {% load socialaccount %}
 {% load allauth account %}
@@ -23,6 +25,9 @@
         <form method="post" action="{% url 'google_login' %}">
             {% csrf_token %}
             <button type="submit" class="btn btn-primary"><i class="bi bi-google"></i> Iniciar Sesión</button>
+            <button type="button" class="btn btn-primary" onclick="location.href='{% url 'iniciosin' %}'">
+    <i class="bi bi-sign-in"></i> Iniciar Sesión como invitado
+</button>
         </form>
 </div>
 </body>

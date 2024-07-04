@@ -1,0 +1,357 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Inicio</title>
+    <script src="https://accounts.google.com/gsi/client" async></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+</head>
+<body>
+
+
+<nav class="navbar bg-transparent fixed-top">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Offcanvas -->
+            <div class="col-auto">
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas"
+                        data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                  
+                </button>
+                <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar"
+                     aria-labelledby="offcanvasNavbarLabel">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasNavbarLabel">MapaFCyT</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body" id="contenidoModal">
+                        <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="/materias/">Inicio</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                   aria-expanded="false">
+                                    Actividades
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                           data-bs-target="#modalmaterias">Agregar/Quitar
+                                        Materias</a></li>
+
+                                    <li><a class="dropdown-item" href="#">Agregar Eventos</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                </ul>
+
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'account_logout' %}">Cerrar Sesion</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- Barra de búsqueda -->
+            <div class="col-auto">
+                <form id="searchForm" class="d-flex" role="search">
+                    <input id="searchInput" class="form-control" list="suggestions" type="search" placeholder="Buscar en MapaFCyT" aria-label="Search">
+<datalist id="suggestions">
+      {% for ubicacion in ubicaciones %}
+      <option value="{{ ubicacion.descripcion }}"></option>
+       {% endfor %}
+</datalist>
+                    <button class="btn" type="submit" id="btn-buscar">
+                        <i class="bi bi-search"></i> <!-- Icono de búsqueda -->
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</nav>
+<div class="modal modal-lg fade" id="modalmaterias" data-bs-keyboard="true"
+     tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                    Agregar Materias</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="get" id="forfiltro">
+                    <div class="selmate">
+                        <label for="semestre" class="sellabel">Semestre:</label>
+                        <select class="form-select" name="semestre" id="semestre">
+                        </select>
+                        <label for="carrera" class="sellabel">Carrera:</label>
+                        <select class="form-select" name="carrera" id="carrera"
+                                aria-label="Default select example">
+                        </select>
+                    </div>
+                </form>
+                <br>
+                <div class="bordercheck">
+                    <div class="check" id="matecon">
+                        <input type="checkbox" name="materias" class="btn-check" id="materias"
+                               autocomplete="off">
+                        <label class="btn" id="btnmate"
+                               for="materias"></label>
+                        <br>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Materia</th>
+                        <th class="text-center">Semestre</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tablebody">
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <div class="container-error"><label id="error-container" class="error-message"></label></div>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar
+                </button>
+                <button type="submit" class="btn btn-primary" id="btnguar">Agregar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="eliminarmodal" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Eliminar Materia</h1>
+            </div>
+            <div class="modal-body">
+                ¿Seguro que Deseas Eliminar esta Materia?
+                <input type="hidden" id="input-materia-id">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-target="#modalmaterias"
+                        data-bs-toggle="modal">
+                    Volver
+                </button>
+                <button type="button" class="btn btn-danger" id="btn-confirmar-eliminacion">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="map"></div>
+<script>
+      var greenIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+    var orangeIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+    var originalIcon = L.icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+    var bounds = L.latLngBounds(
+        L.latLng(-25.453157778381083, -56.445153589817075), // Esquina suroeste
+        L.latLng(-25.454265872490453, -56.44178651283933)  // Esquina noreste
+    );
+    var map = L.map('map', {
+        maxBounds: bounds,
+        maxBoundsViscosity: 1.0 // Hace que el mapa rebote cuando intentas moverlo fuera de los límites
+    }).setView([-25.453592270187336, -56.44307543787256], 20);
+    
+    var ThunderforestOpenCycleMap = L.tileLayer('https://{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey={apikey}', {
+        attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        apikey: 'e55fe3a6914d40a5a7fb22d183f3bd4e',
+        maxZoom: 21,
+        minZoom: 18,
+    }).addTo(map);
+    
+document.addEventListener("DOMContentLoaded", function() {
+    var highlightedMarker = null;
+
+    document.getElementById("searchForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        var searchInput = document.getElementById("searchInput").value.toLowerCase();
+        var matchingMarker = null;
+
+        // Verificar si map está definido y es una instancia de Leaflet Map
+        if (typeof map !== 'undefined' && map instanceof L.Map) {
+            map.eachLayer(function(layer) {
+                if (layer instanceof L.Marker && layer.getPopup()) { // Verificar si es un marcador y tiene un popup
+                    var popupContent = layer.getPopup().getContent();
+                    if (popupContent && popupContent.toLowerCase().includes(searchInput)) {
+                        matchingMarker = layer;
+                        return;
+                    }
+                }
+            });
+        } else {
+            console.error('Map is not defined or is not an instance of Leaflet Map.');
+            return;
+        }
+
+        if (!matchingMarker) {
+            alert("No se encontraron coincidencias en los marcadores.");
+            return;
+        }
+
+        if (highlightedMarker) {
+            highlightedMarker.setIcon(originalIcon);
+        }
+
+        matchingMarker.setIcon(greenIcon);
+        highlightedMarker = matchingMarker;
+        map.setView(matchingMarker.getLatLng(), 20);
+    });
+});
+
+   
+    var ubicaciones = [];
+    var relaciones = [];
+    var usuariorelaciones = [];
+   
+    console.log(usuariorelaciones)
+    {% for relacion in relaciones %}
+        relaciones.push(["{{ relacion.materia.descripcion}}", {{ relacion.sala.id }}, "{{ relacion.hora_entrada|time:"H:i" }}", "{{ relacion.hora_salida|time:"H:i" }}", {{ relacion.dia_semana.id }}, "{{ relacion.dia_semana.descripcion }}", "{{ relacion.materia.idCarrera.descripcion }}", {{ relacion.materia.id }}]);
+    {% endfor %}
+    {% for ubicacion in ubicaciones %}
+        L.marker([{{ ubicacion.latitud }}, {{ ubicacion.longitud }}]).addTo(map)
+            .bindPopup("{{ ubicacion.descripcion }}");
+        ubicaciones.push([{{ ubicacion.latitud }}, {{ ubicacion.longitud }}, "{{ ubicacion.descripcion }}", {{ ubicacion.id }}]);
+    {% endfor %}
+
+    L.control.scale().addTo(map);
+    console.log("AULAS", ubicaciones)
+    console.log("AULAS CON MATERIAS", relaciones)
+
+    function existeCoincidencia() {
+        if (usuariorelaciones.length === 0) {
+            return false; // No hay coincidencia
+        }
+        for (var i = 0; i < usuariorelaciones[0].length; i++) {
+            if (relaciones.some(function (relacion) {
+                return relacion[7] === usuariorelaciones[0][i];
+            })) {
+                return true; // Hay coincidencia
+            }
+        }
+        return false; // No hay coincidencia
+    }
+
+   ubicaciones.forEach(function (ubicacion) {
+    var marker = L.marker([ubicacion[0], ubicacion[1]]).addTo(map);
+    marker.bindPopup(ubicacion[2]);
+    var relacionesDeSala = relaciones.filter(function (relacion) {
+        return relacion[1] === ubicacion[3];
+    });
+
+    relacionesDeSala.forEach(function (relacion) {
+        var materiaContent = "</br><b>Materia:</b> " + relacion[0];
+        var desdeContent = "<b>Desde:</b> " + relacion[2];
+        var hastaContent = "<b>Hasta:</b> " + relacion[3];
+        var carreraContent = "<b>Carrera:</b> " + relacion[6];
+
+        var hayClase = existeCoincidencia();
+
+        // Inicializamos popupContent con el contenido estándar
+        var popupContent = materiaContent + "<br>" + desdeContent + "<br>" + hastaContent + "<br>" + carreraContent;
+
+        // Recorremos todas las relaciones del usuario
+        for (var i = 0; i < usuariorelaciones.length; i++) {
+            if (hayClase && relacion[7] === usuariorelaciones[i][0]) {
+                popupContent = "<p>Tienes Clase Ahora</p>" + materiaContent + "<br>" + desdeContent + "<br>" + hastaContent + "<br>" + carreraContent;
+                marker.setIcon(orangeIcon);
+                break; // Si ya encontramos una coincidencia, salimos del bucle
+            }
+        }
+
+        // Agregar el contenido al popup
+        marker.bindPopup(marker.getPopup().getContent() + popupContent);
+    });
+});
+
+
+
+  
+    
+    
+    var customControl = L.control.zoom({
+        position: 'bottomright'
+    });
+    customControl.addTo(map);
+    map.removeControl(map.zoomControl);
+    if (navigator.geolocation) {
+        var customIcon = L.icon({
+            iconUrl: '{% static 'img/usuimgmap.png' %}',
+            iconSize: [40, 36],
+            iconAnchor: [20, 18]
+        })
+        var marker;
+
+        navigator.geolocation.watchPosition(function (position) {
+            var lat = position.coords.latitude;
+            var lon = position.coords.longitude;
+
+            // Si el marcador ya existe, actualizar su posición
+            if (marker) {
+                marker.setLatLng([lat, lon]);
+            } else {
+                // Si no, crear el marcador y centrar el mapa
+                //map.setView([lat, lon], 15);
+
+                marker = L.marker([lat, lon], {icon: customIcon}).addTo(map)
+            }
+        }, function (error) {
+            console.error(error);
+            alert("Unable to retrieve your location.");
+        }, {
+            enableHighAccuracy: true
+        });
+    } else {
+        alert("Geolocation is not supported by this browser.");
+    }
+</script>
+</body>
+</html>
