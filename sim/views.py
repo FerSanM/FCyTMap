@@ -1,10 +1,12 @@
 import os
 
+import pytz
 from django.db import connection
 from django.views.decorators.http import require_http_methods
 
-from .models import User, Carrera
+from .models import User, Carrera, Actividades
 from django.http import HttpResponse, JsonResponse
+from django.utils import timezone
 
 from .models import User, Carrera, Sala
 from django.http import HttpResponse
@@ -38,17 +40,15 @@ def inicio(request):
 
     if usuario.is_authenticated:
         userdata = SocialAccount.objects.filter(user_id=usuario.id)
-
+    else:
+        return redirect('login')
     # Obtener el día de la semana actual (lunes=0, martes=1, ..., domingo=6)
     dia_actual = datetime.datetime.now().weekday()
     dia_actual = dia_actual + 1
     hora_actual = datetime.datetime.now().time()
     relaciones_sala_materia = RelacionMateriaSala.objects.filter(dia_semana=dia_actual, hora_entrada__lte=hora_actual,
                                                                  hora_salida__gte=hora_actual)
-    # correo_usuario = request.session.get('user_data', {}).get('email')
-    # usuario = User.objects.filter(correo_electronico=correo_usuario).first()
-    # usuarioA = request.user.id
-    # print("Se supone que estos son los datos?",usuarioA)
+
     iduser = request.user.id
     materias_seleccionadas = Materia.objects.filter(relacionusuariomateria__usuario__id=iduser)
     # Consulta utilizando el ORM de Django
@@ -61,7 +61,22 @@ def inicio(request):
         'materias_usuario': materias_filtradas,
         'userdata': userdata,
     })
+def iniciosin (request):
+    ubicaciones = Sala.objects.all()
 
+
+
+    # Obtener el día de la semana actual (lunes=0, martes=1, ..., domingo=6)
+    dia_actual = datetime.datetime.now().weekday()
+    dia_actual = dia_actual + 1
+    hora_actual = datetime.datetime.now().time()
+    relaciones_sala_materia = RelacionMateriaSala.objects.filter(dia_semana=dia_actual, hora_entrada__lte=hora_actual,
+                                                                 hora_salida__gte=hora_actual)
+
+    return render(request, 'iniciosin.html', {
+        'ubicaciones': ubicaciones,
+        'relaciones': relaciones_sala_materia,
+    })
 
 @csrf_exempt
 def auth_receiver(request):
@@ -260,3 +275,58 @@ def get_tabla(request):
             return JsonResponse({'message': 'No hay datos'})
     else:
         return JsonResponse({'message': 'Usuario no encontrado'})
+
+
+def get_notificaciones(request):
+    usuario = request.user
+    if usuario:
+        id_usuario = usuario.id
+        print(id_usuario)
+
+
+        ahora = timezone.localtime(timezone.now())
+        print(ahora)
+        inicio_hoy = ahora.replace(hour=0, minute=0, second=0, microsecond=0)
+        print(inicio_hoy)
+        fin_hoy = ahora.replace(hour=23, minute=59, second=59, microsecond=999999)
+        print(fin_hoy)
+
+        notificaciones = list(Actividades.objects.filter(
+        idUsuario=id_usuario,
+        fecha_notificacion__lte=ahora,
+
+        ).order_by('-fecha_actividad').values())
+
+        if len(notificaciones) > 0:
+            data = {'message': "Success", 'notificaciones': notificaciones}
+        else:
+            data = {'message': "Not Found"}
+
+        return JsonResponse(data)
+
+def get_actividades(request):
+    usuario = request.user
+    if usuario:
+        id_usuario = usuario.id
+
+        ahora = timezone.localtime(timezone.now())
+        print(ahora)
+        inicio_hoy = ahora.replace(hour=0, minute=0, second=0, microsecond=0)
+        print(inicio_hoy)
+        fin_hoy = ahora.replace(hour=23, minute=59, second=59, microsecond=999999)
+        print(fin_hoy)
+
+        notificaciones = list(Actividades.objects.filter(
+            idUsuario=id_usuario,
+            fecha_actividad__lte=ahora,
+            fecha_actividad__range=(inicio_hoy, fin_hoy)
+        ).select_related('idSala').values(
+            'id', 'descripcion', 'fecha_actividad', 'fecha_notificacion', 'idSala__nombre', 'idSala__ubicacion'
+        ))
+
+        if len(notificaciones) > 0:
+            data = {'message': "Success", 'notificaciones': notificaciones}
+        else:
+            data = {'message': "Not Found"}
+
+        return JsonResponse(data)
