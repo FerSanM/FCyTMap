@@ -29,7 +29,10 @@ const listarNotificaciones = async () => {
 
         if (data.message === "Success") {
             let opciones = ``;
-            data.notificaciones.forEach((notificacion) => {
+            const maxNotificaciones = 6; // Máximo de notificaciones a mostrar
+            const notificaciones = data.notificaciones.slice(0, maxNotificaciones);
+
+            notificaciones.forEach((notificacion) => {
                 const fechaFormateada = formatDate(notificacion.fecha_actividad);
                 const diasFaltantes = calculateDaysDifference(notificacion.fecha_actividad);
                 let mensajeDias = '';
@@ -46,7 +49,7 @@ const listarNotificaciones = async () => {
                                     <i class="bi bi-journal-bookmark-fill"></i>
                                 </div>
                                 <div class="content-noti">
-                                    <span style="font-size: 12px">Notificacion de Evento</span><br>
+                                    <span style="font-size: 12px">Notificación de Evento</span><br>
                                     <span><b>${notificacion.descripcion}</b></span><br>
                                      <span style="font-size: 12px">${mensajeDias}</span>
                                 </div>
@@ -55,13 +58,13 @@ const listarNotificaciones = async () => {
                     </li>`;
             });
 
-            // Agregar el último <li> al final
+            // Verificar si hay más de 5 notificaciones para mostrar el "Ver Más"
             opciones += `
-                <li>
-                    <footer class="footer-noti">
-                        <a href="#">Ver Más</a>
-                    </footer>
-                </li>`;
+                    <li class="fixed-footer">
+                        <footer class="footer-noti">
+                            <a href="#">Ver Más</a>
+                        </footer>
+                    </li>`;
 
             document.getElementById('notif').innerHTML = opciones;
 
@@ -72,6 +75,7 @@ const listarNotificaciones = async () => {
         console.log(error);
     }
 };
+
 
 const listarCarreras = async () => {
     try {
@@ -95,7 +99,51 @@ const listarCarreras = async () => {
         console.log(error);
     }
 };
+const listarsalas = async () => {
+    try {
+        const response = await fetch("listarsalas/");
+        const sala = await response.json();
+        console.log(sala);
 
+        if (sala.message === "Success") {
+
+            let opciones = ``;
+            opciones += `<option selected disabled value="">Elige una Ubicacion</option>`
+            sala.salas.forEach((sala) => {
+                opciones += `<option value="${sala.id}">${sala.descripcion}</option>`;
+            })
+
+            salas.innerHTML = opciones
+
+        } else {
+            alert("datos no encontrados");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+};
+const listarsalasedit = async () => {
+    try {
+        const response = await fetch("listarsalas/");
+        const sala = await response.json();
+        console.log(sala);
+
+        if (sala.message === "Success") {
+
+            let opciones = ``;
+            sala.salas.forEach((sala) => {
+                opciones += `<option value="${sala.id}">${sala.descripcion}</option>`;
+            })
+
+            salasEditar.innerHTML = opciones
+
+        } else {
+            alert("datos no encontrados");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+};
 const mostrarsemestre = () => {
 
     let opciones = ``;
@@ -113,7 +161,6 @@ const mostrarsemestre = () => {
     semestre.innerHTML = opciones
 
 }
-
 
 mostrarTabla = async () => {
     try {
@@ -155,21 +202,90 @@ mostrarTabla = async () => {
         console.log(error);
     }
 }
-document.addEventListener('DOMContentLoaded', async () => {
-    // Agregar evento de clic para abrir el modal de confirmación
-    const botonesAbrirModal = document.querySelectorAll('.btn-eliminar');
-    botonesAbrirModal.forEach(boton => {
-        boton.addEventListener('click', async () => {
-            const materiaId = boton.getAttribute('data-materia-id');
-            // Al abrir el modal, establecer el ID de materia a eliminar en el campo oculto dentro del modal
-            document.getElementById('input-materia-id').value = materiaId;
-            console.log(materiaId);
-        });
-    });
 
-    // Aquí puedes colocar otros códigos relacionados con el DOM
-});
+mostrarTablaEventos = async () => {
+    try {
+        const response = await fetch("tabla_eventos/");
+        const datas = await response.json();
+        console.log(datas);
 
+        if (datas.message === "Success") {
+
+            let opciones = ``;
+            datas.datos.forEach((dato) => {
+                opciones += `<tr>
+                             <td class="campo-evento">${dato.Evento}</td>
+                             <td class="text-center">${dato.Fecha_actividad}</td>
+                             <td class="text-center">${dato.Sala}</td>
+                             <td class="text-center">
+                                <button type="button" class="btn btn-danger btn-eliminarevento" 
+                                        data-evento-id="${dato.id}" data-bs-toggle="modal" 
+                                        data-bs-target="#eliminarevento">
+                                        <i class="bi bi-trash-fill"></i></button>
+                                <button type="button" class="btn btn-primary btn-editarevento"
+                                        data-eventoedit-id="${dato.id}"
+                                        data-bs-toggle="modal" data-bs-target="#editarEventoModal"><i
+                                        class="bi bi-pencil-square"></i></button>
+                             </td>
+                             </tr>`;
+            })
+
+            tableeventos.innerHTML = opciones
+
+            const botonesEditarEvento = document.querySelectorAll('.btn-editarevento');
+            botonesEditarEvento.forEach(boton => {
+                boton.addEventListener('click', async () => {
+                    const eventoidedit = boton.getAttribute('data-eventoedit-id');
+                    // Llamar a función para obtener y prellenar datos del evento en el modal
+                    await obtenerYMostrarDatosEvento(eventoidedit);
+                });
+            });
+            const botonesAbrirModal = document.querySelectorAll('.btn-eliminarevento');
+            botonesAbrirModal.forEach(boton => {
+                boton.addEventListener('click', async () => {
+                    const eventoId = boton.getAttribute('data-evento-id');
+                    // Al abrir el modal, establecer el ID de materia a eliminar en el campo oculto dentro del modal
+                    document.getElementById('input-evento-id').value = eventoId;
+                    console.log(eventoId);
+                });
+            });
+
+        } else if (data.message === "No hay datos") {
+            let opciones = ``;
+            opciones += `<tr>
+                             </tr>`;
+            tableeventos.innerHTML = opciones
+        } else {
+            alert("No hay datos")
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+const obtenerYMostrarDatosEvento = async (eventoidedit) => {
+    try {
+        const response = await fetch(`obtener_evento/${eventoidedit}/`);
+        const data = await response.json();
+        console.log(data)
+
+        if (data.message === 'Success') {
+            const evento = data.evento;
+
+            // Preencher el modal de editar con los datos obtenidos
+            document.getElementById('evento-id-editar').value = evento.id
+            document.getElementById('inputEventoEdit').value = evento.nombre_evento;
+            document.getElementById('salasEditar').value = evento.sala_id.toString();
+            document.getElementById('datetimefechaEdit').querySelector('input').value = evento.fecha_actividad;
+            document.getElementById('datetimenotificacionEdit').querySelector('input').value = evento.fecha_notificacion;
+
+            // Aquí puedes añadir más campos del formulario según sea necesario
+        } else {
+            alert('Error al obtener datos del evento');
+        }
+    } catch (error) {
+        console.error('Error al obtener datos del evento:', error);
+    }
+}
 
 const cargaInicial = async () => {
     const idCarreraInicial = 1; // Valor predeterminado para idCarrera
@@ -178,6 +294,9 @@ const cargaInicial = async () => {
     await listarCarreras();
     await mostrarsemestre();
     await mostrarTabla();
+    await listarsalas();
+    await listarsalasedit();
+    await mostrarTablaEventos();
     await listarNotificaciones();
     await listarMaterias(idCarreraInicial, semestreInicial); // Llamar a listarMaterias con valores iniciales
 
@@ -266,7 +385,39 @@ const cargaInicial = async () => {
         });
     });
 
-    // Asociar evento de clic al botón "Eliminar" en el modal
+    document.getElementById('btn-confirmar-eliminacionevento').addEventListener('click', async () => {
+        try {
+            // Obtener el ID de la materia a eliminar del campo oculto en el modal
+            const evento_id = document.getElementById('input-evento-id').value;
+            console.log(evento_id)
+
+            // Realizar la solicitud para eliminar la materia
+            const response = await fetch(`eliminar_evento/${evento_id}/`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                }
+            });
+
+            // Verificar si la eliminación fue exitosa
+            if (response.ok) {
+                console.log('Evento eliminado correctamente');
+                // Actualizar la tabla o realizar cualquier otra acción necesaria después de la eliminación
+                await mostrarTablaEventos();
+                // Cerrar el modal después de eliminar la materia
+                $('#eliminarevento').modal('hide');
+                $('#modaleventos').modal('show');
+            } else {
+                console.error('Error al eliminar el evento');
+                // Mostrar un mensaje de error u otra acción de manejo de errores si es necesario
+            }
+        } catch (error) {
+            console.error('Error al eliminar el evento:', error);
+            // Mostrar un mensaje de error u otra acción de manejo de errores si es necesario
+        }
+    });
+
     document.getElementById('btn-confirmar-eliminacion').addEventListener('click', async () => {
         try {
             // Obtener el ID de la materia a eliminar del campo oculto en el modal
@@ -300,8 +451,122 @@ const cargaInicial = async () => {
         }
     });
 
-};
+    document.getElementById('btn-agregarevento').addEventListener('click', async function () {
+        const nombreEvento = document.getElementById('inputEvento').value;
+        const sala = document.getElementById('salas').value;
+        const fechaActividad = document.getElementById('datetimefecha').querySelector('input').value;
+        const fechaNotificacion = document.getElementById('datetimenotificacion').querySelector('input').value;
 
+        const fechaActividadDt = new Date(fechaActividad);
+        const fechaNotificacionDt = new Date(fechaNotificacion);
+
+        if (fechaNotificacionDt > fechaActividadDt) {
+            // Mostrar el toast
+            const toastEl = document.getElementById('liveToast');
+            const toast = new bootstrap.Toast(toastEl);
+            toast.show();
+            return;
+        }
+        const data = {
+            nombre_evento: nombreEvento,
+            sala: sala,
+            fecha_actividad: fechaActividad,
+            fecha_notificacion: fechaNotificacion,
+        };
+        console.log(data)
+        try {
+            const response = await fetch('guardar_evento/', {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Hubo un problema al guardar el evento.');
+            }
+
+            const responseData = await response.json();
+            if (responseData.message === 'Success') {
+                // Acción cuando se guarda correctamente
+                // Recargar la página o actualizar la lista de eventos
+                await mostrarTablaEventos()
+                $('#agregarevento').modal('hide');
+                $('#modaleventos').modal('show');
+            } else {
+                // Manejo de errores
+                if (responseData.message === 'La fecha de notificación no puede ser posterior a la fecha del evento.') {
+                    const toastEl = document.getElementById('liveToast');
+                    const toast = new bootstrap.Toast(toastEl);
+                    toast.show();
+                }
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al guardar el evento');
+        }
+    });
+    document.getElementById('btn-editarEvento').addEventListener('click', async function () {
+        const eventoId = document.getElementById('evento-id-editar').value;
+        const nombreEvento = document.getElementById('inputEventoEdit').value;
+        const sala = document.getElementById('salasEditar').value;
+        const fechaActividad = document.getElementById('datetimefechaEdit').querySelector('input').value;
+        const fechaNotificacion = document.getElementById('datetimenotificacionEdit').querySelector('input').value;
+
+        const fechaActividadDt = new Date(fechaActividad);
+        const fechaNotificacionDt = new Date(fechaNotificacion);
+
+        if (fechaNotificacionDt > fechaActividadDt) {
+            const toastEl = document.getElementById('liveToast');
+            const toast = new bootstrap.Toast(toastEl);
+            toast.show();
+            return;
+        }
+
+        const data = {
+            id: eventoId,
+            nombre_evento: nombreEvento,
+            sala: sala,
+            fecha_actividad: fechaActividad,
+            fecha_notificacion: fechaNotificacion,
+        };
+
+        try {
+            const response = await fetch('editar_evento/', {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken  // Asegúrate de que tienes el token CSRF en tu plantilla
+                }
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result.message === 'Success') {
+                    await mostrarTablaEventos()
+                    $('#editarEventoModal').modal('hide');
+                    $('#modaleventos').modal('show');
+
+                } else {
+                    if (result.message === 'La fecha de notificación no puede ser posterior a la fecha del evento.') {
+                        const toastEl = document.getElementById('liveToast');
+                        const toast = new bootstrap.Toast(toastEl);
+                        toast.show();
+                    }
+                }
+            } else {
+                throw new Error('Error al actualizar el evento');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al actualizar el evento');
+        }
+    });
+
+};
 
 function showErrorMessage(message) {
     const errorContainer = document.getElementById('error-container');

@@ -42,6 +42,14 @@ body, html {
     align-items: center;
 }
 
+.fixed-footer {
+    height: 30px;
+    position: sticky;
+    bottom: 0;
+    background-color: white;
+    z-index: 10;
+}
+
 .footer-noti > a {
     text-decoration: none;
     color: unset;
@@ -51,10 +59,13 @@ body, html {
     color: dodgerblue;
 }
 
+.campo-evento {
+    width: 220px;
+}
+
 .noti-container {
     display: flex;
     align-items: center;
-    justify-content: space-between;
 }
 
 .container-fluid {
@@ -162,6 +173,7 @@ body, html {
     align-content: space-between;
     justify-content: space-between;
     padding: 0 20px 0 20px;
+    margin-bottom: 10px;
 }
 
 .datetimepicker-input {
@@ -185,14 +197,59 @@ body, html {
     width: 5%;
 }
 
+.content-noti {
+    width: 300px;
+    max-width: 300px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+}
+
+#notif {
+    max-height: 326px;
+}
+
+#notif::-webkit-scrollbar {
+    width: 7px;
+    background: white;
+    border-radius: 12px;
+}
+
+#notif::-webkit-scrollbar-thumb {
+    background: dodgerblue;
+    border-radius: 10px;
+}
+
+.dropdown-menu {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
 #offcanvasNavbar {
     width: 300px;
 }
 
-.table-responsive {
-    padding-left: 60px;
-    padding-right: 60px;
+.modal-content {
+    max-height: 650px;
+}
 
+.table-responsive {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.table-responsive::-webkit-scrollbar {
+    width: 7px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background-color: rgba(187, 187, 187, 0.8);
+    border-radius: 10px;
+    transition: background-color 0.5s ease;
+}
+
+.table-responsive.hide-scrollbar::-webkit-scrollbar-thumb {
+    background-color: transparent;
 }
 
 .container-error {

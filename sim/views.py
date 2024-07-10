@@ -10,7 +10,7 @@ from django.utils import timezone
 
 from .models import User, Carrera, Sala
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from google.oauth2 import id_token
 from google.auth.transport import requests
@@ -21,8 +21,8 @@ from .models import RelacionUsuarioMateria
 from django.shortcuts import render
 from .models import User, Materia
 import json
-from django.views.decorators.csrf import csrf_protect
 import datetime
+from django.views.decorators.csrf import csrf_protect
 from .models import RelacionUsuarioMateria, RelacionMateriaSala
 from django.contrib.auth.models import User
 from allauth.socialaccount.models import SocialAccount
@@ -61,10 +61,10 @@ def inicio(request):
         'materias_usuario': materias_filtradas,
         'userdata': userdata,
     })
-def iniciosin (request):
+
+
+def iniciosin(request):
     ubicaciones = Sala.objects.all()
-
-
 
     # Obtener el día de la semana actual (lunes=0, martes=1, ..., domingo=6)
     dia_actual = datetime.datetime.now().weekday()
@@ -77,6 +77,7 @@ def iniciosin (request):
         'ubicaciones': ubicaciones,
         'relaciones': relaciones_sala_materia,
     })
+
 
 @csrf_exempt
 def auth_receiver(request):
@@ -193,6 +194,49 @@ def guardar_materias(request):
         return JsonResponse({'error': 'No se pudo procesar la solicitud'}, status=400)
 
 
+@csrf_exempt
+def guardar_evento(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        print('Datos recibidos:', data)
+        nombre_evento = data.get('nombre_evento')
+        sala_id = data.get('sala')
+        fecha_actividad = data.get('fecha_actividad')
+        fecha_notificacion = data.get('fecha_notificacion')
+
+        if nombre_evento and sala_id and fecha_actividad and fecha_notificacion:
+            try:
+                sala = Sala.objects.get(id=sala_id)
+                formato_fecha = '%d/%m/%Y %H:%M'
+                fecha_actividad_dt = datetime.datetime.strptime(fecha_actividad, formato_fecha)
+                fecha_notificacion_dt = datetime.datetime.strptime(fecha_notificacion, formato_fecha)
+                if fecha_notificacion_dt > fecha_actividad_dt:
+                    return JsonResponse(
+                        {'message': 'La fecha de notificación no puede ser posterior a la fecha del evento.'})
+
+                # Convert to aware datetime with timezone information
+                timezone_asuncion = pytz.timezone('America/Asuncion')  # Adjust timezone as needed
+                fecha_actividad_aware = timezone_asuncion.localize(fecha_actividad_dt)
+                fecha_notificacion_aware = timezone_asuncion.localize(fecha_notificacion_dt)
+
+                evento = Actividades(
+                    descripcion=nombre_evento,
+                    idSala=sala,
+                    fecha_actividad=fecha_actividad_aware,
+                    fecha_notificacion=fecha_notificacion_aware,
+                    idUsuario=request.user
+                )
+                evento.save()
+                return JsonResponse({'message': 'Success'})
+            except ValueError as e:
+                return JsonResponse({'message': f'Error de formato de fecha: {str(e)}'}, status=400)
+            except Sala.DoesNotExist:
+                return JsonResponse({'message': 'Sala no encontrada'}, status=400)
+        else:
+            return JsonResponse({'message': 'Datos incompletos'}, status=400)
+    return JsonResponse({'message': 'Método no permitido'}, status=405)
+
+
 def eliminar_materias(request):
     if request.method == 'POST':
         usuario_id = request.POST.get('usuario_id')
@@ -247,6 +291,23 @@ def eliminar_relacion(request, relacion_id):
         return JsonResponse({'error': 'Hubo un problema al eliminar la relación'}, status=500)
 
 
+@require_http_methods(["DELETE"])
+def eliminar_evento(request, evento_id):
+    try:
+        # Buscar la relación por su ID
+        evento_eliminar = Actividades.objects.get(id=evento_id)
+        # Eliminar la relación
+        evento_eliminar.delete()
+        # Devolver una respuesta de éxito
+        return JsonResponse({'message': 'Evento eliminada correctamente'})
+    except RelacionUsuarioMateria.DoesNotExist:
+        # Si la relación no existe, devolver un error
+        return JsonResponse({'error': 'El evento especificado no existe'}, status=404)
+    except Exception as e:
+        # Si ocurre algún otro error, devolver un error genérico
+        return JsonResponse({'error': 'Hubo un problema al eliminar el evento'}, status=500)
+
+
 def get_tabla(request):
     usuario = request.user
     if usuario:
@@ -277,12 +338,39 @@ def get_tabla(request):
         return JsonResponse({'message': 'Usuario no encontrado'})
 
 
+def get_tablaeventos(request):
+    usuario = request.user
+    if usuario:
+        id_usuario = usuario.id
+        eventos = Actividades.objects.filter(idUsuario_id=id_usuario)
+        if eventos:
+            datos = []
+            for evento in eventos:
+                sala_id = evento.idSala_id
+                sala = Sala.objects.filter(id=sala_id).first()
+
+                if sala:
+                    datos.append({
+                        'id': evento.id,
+                        'Sala': sala.descripcion,
+                        'Evento': evento.descripcion,
+                        'Fecha_actividad': evento.fecha_actividad.strftime('%d/%m/%Y %H:%M'),
+                    })
+            if datos:
+                return JsonResponse({'message': 'Success', 'datos': datos})
+            else:
+                return JsonResponse({'message': 'No hay datos'})
+        else:
+            return JsonResponse({'message': 'No encontraron datos de Evento'})
+    else:
+        return JsonResponse({'message': 'Usuario no encontrado'})
+
+
 def get_notificaciones(request):
     usuario = request.user
     if usuario:
         id_usuario = usuario.id
         print(id_usuario)
-
 
         ahora = timezone.localtime(timezone.now())
         print(ahora)
@@ -292,8 +380,8 @@ def get_notificaciones(request):
         print(fin_hoy)
 
         notificaciones = list(Actividades.objects.filter(
-        idUsuario=id_usuario,
-        fecha_notificacion__lte=ahora,
+            idUsuario=id_usuario,
+            fecha_notificacion__lte=ahora,
 
         ).order_by('-fecha_actividad').values())
 
@@ -303,6 +391,18 @@ def get_notificaciones(request):
             data = {'message': "Not Found"}
 
         return JsonResponse(data)
+
+
+def get_sala(request):
+    salas = list(Sala.objects.values())
+
+    if len(salas) > 0:
+        sala = {'message': "Success", 'salas': salas}
+    else:
+        sala = {'message': "Not Found"}
+
+    return JsonResponse(sala)
+
 
 def get_actividades(request):
     usuario = request.user
@@ -330,3 +430,70 @@ def get_actividades(request):
             data = {'message': "Not Found"}
 
         return JsonResponse(data)
+
+
+def obtener_evento(request, evento_id):
+    try:
+        evento = get_object_or_404(Actividades, id=evento_id)
+
+        # Preparar los datos del evento para enviar como respuesta JSON
+        data = {
+            'message': 'Success',
+            'evento': {
+                'id': evento.id,
+                'nombre_evento': evento.descripcion,  # Ajusta según el nombre del campo en tu modelo
+                'sala_id': evento.idSala_id,  # Ajusta según el nombre del campo en tu modelo y relación de sala
+                'fecha_actividad': evento.fecha_actividad.strftime('%d/%m/%Y %H:%M'),  # Formato de fecha
+                'fecha_notificacion': evento.fecha_notificacion.strftime('%d/%m/%Y %H:%M'),  # Formato de fecha
+                # Agrega más campos según sea necesario
+            }
+        }
+
+        return JsonResponse(data)
+
+    except Actividades.DoesNotExist:
+        return JsonResponse({'message': 'Evento no encontrado'}, status=404)
+    except Exception as e:
+        return JsonResponse({'message': str(e)}, status=500)
+
+
+@csrf_exempt
+def editar_evento(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        evento_id = data.get('id')
+        nombre_evento = data.get('nombre_evento')
+        sala_id = data.get('sala')
+        fecha_actividad = data.get('fecha_actividad')
+        fecha_notificacion = data.get('fecha_notificacion')
+
+        if evento_id and nombre_evento and sala_id and fecha_actividad and fecha_notificacion:
+            try:
+                evento = Actividades.objects.get(id=evento_id)
+                salas = Sala.objects.get(id=sala_id)
+                fecha_actividad_dta = datetime.datetime.strptime(fecha_actividad, '%d/%m/%Y %H:%M')
+                fecha_notificacion_dta = datetime.datetime.strptime(fecha_notificacion, '%d/%m/%Y %H:%M')
+
+                if fecha_notificacion_dta > fecha_actividad_dta:
+                    return JsonResponse(
+                        {'message': 'La fecha de notificación no puede ser posterior a la fecha del evento.'})
+                timezones = pytz.timezone('America/Asuncion')
+                fecha_actividad_aware = timezones.localize(fecha_actividad_dta)
+                fecha_notificacion_aware = timezones.localize(fecha_notificacion_dta)
+
+                evento.descripcion = nombre_evento
+                evento.idSala = salas
+                evento.fecha_actividad = fecha_actividad_aware
+                evento.fecha_notificacion = fecha_notificacion_aware
+                evento.save()
+
+                return JsonResponse({'message': 'Success'})
+            except Actividades.DoesNotExist:
+                return JsonResponse({'message': 'Evento no encontrado'}, status=400)
+            except Sala.DoesNotExist:
+                return JsonResponse({'message': 'Sala no encontrada'}, status=400)
+            except ValueError as e:
+                return JsonResponse({'message': f'Error de formato de fecha: {str(e)}'}, status=400)
+        else:
+            return JsonResponse({'message': 'Datos incompletos'}, status=400)
+    return JsonResponse({'message': 'Método no permitido'}, status=405)

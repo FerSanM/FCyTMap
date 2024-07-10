@@ -12,6 +12,11 @@ urlpatterns = [
     path('inicio/materias/<int:idcarrera>/<int:semestre>', views.get_materias, name='get_materias'),
     path('inicio/notificaciones/', views.get_notificaciones, name='get_notificaciones'),
     path('inicio/tabla/', views.get_tabla, name='get_tabla'),
-    path('inicio/eliminar_relacion/<int:relacion_id>/', views.eliminar_relacion, name='eliminar_relacion')
-
+    path('inicio/eliminar_relacion/<int:relacion_id>/', views.eliminar_relacion, name='eliminar_relacion'),
+    path('inicio/eliminar_evento/<int:evento_id>/', views.eliminar_evento, name='eliminar_evento'),
+    path('inicio/tabla_eventos/', views.get_tablaeventos, name='get_tablaeventos'),
+    path('inicio/listarsalas/', views.get_sala, name='get_sala'),
+    path('inicio/obtener_evento/<int:evento_id>/', views.obtener_evento, name='obtener_evento'),
+    path('inicio/editar_evento/', views.editar_evento, name='editar_evento'),
+    path('inicio/guardar_evento/', views.guardar_evento, name='guardar_evento'),
 ]

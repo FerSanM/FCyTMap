@@ -66,10 +66,6 @@
 
                                     <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
                                            data-bs-target="#modaleventos">Agregar Eventos</a></li>
-                                    <li>
-                                        <hr class="dropdown-divider">
-                                    </li>
-                                    <li><a class="dropdown-item" href="#">Something else here</a></li>
                                 </ul>
 
                             </li>
@@ -97,40 +93,7 @@
         <a class="btn btn-notificacion" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="bi bi-bell"></i>
         </a>
-        <ul class="dropdown-menu" id="notif">
-            <li class="li-noti"> 
-                <a class="dropdown-item" href="#">
-                    <div class="noti-container">
-                        <div class="icon-noti">
-                            <i class="bi bi-journal-bookmark-fill"></i>
-                        </div>
-                        <div class="content-noti">
-                            <span style="font-size: 12px">Tu Evento esta por Comenzar</span><br>
-                            <span><b>Examen Calculo</b></span><br>
-                            <span style="font-size: 12px">Dentro de 5min</span>
-                        </div>
-                    </div>
-                </a>
-            </li>
-            <li class="li-noti">
-                <a class="dropdown-item" href="#">
-                    <div class="noti-container">
-                        <div class="icon-noti">
-                            <i class="bi bi-journal-bookmark-fill"></i>
-                        </div>
-                        <div class="content-noti">
-                            <span style="font-size: 12px">Tu Evento esta por Comenzar</span><br>
-                            <span><b>Examen Redes</b></span><br>
-                            <span style="font-size: 12px">Dentro de 12h</span>
-                        </div>
-                    </div>
-                </a>
-            </li>
-            <li>
-                <footer class="footer-noti">
-                    <a href="#">Ver Más</a>
-                </footer>
-            </li>
+        <ul class="dropdown-menu overflow-auto mb-3" id="notif">
         </ul>
     </div>
     {% for userdatas in userdata %}
@@ -172,7 +135,7 @@
                     </div>
                 </div>
             </div>
-            <div class="table-responsive">
+            <div class="table-responsive" style="max-height: 400px;">
                 <table class="table table-striped">
                     <thead>
                     <tr>
@@ -209,7 +172,7 @@
                             class="bi bi-plus-circle-fill"></i> Agregar Evento
                     </button>
                 </div>
-                <div class="table-responsive">
+                <div class="table-responsive" style="max-height: 400px;">
                     <table class="table table-striped">
                         <thead>
                         <tr>
@@ -220,21 +183,6 @@
                         </tr>
                         </thead>
                         <tbody id="tableeventos">
-                        <tr>
-                            <td>${dato.Evento}</td>
-                            <td class="text-center">${dato.Fecha}</td>
-                            <td class="text-center">${dato.Lugar}</td>
-                            <td class="text-center">
-                                <button type="button" class="btn btn-danger btn-eliminarevent"
-                                        data-materia-id="${dato.id}"
-                                        data-bs-toggle="modal" data-bs-target="#eliminarmodal"><i
-                                        class="bi bi-trash-fill"></i></button>
-                                <button type="button" class="btn btn-primary btn-editarevent"
-                                        data-materia-id="${dato.id}"
-                                        data-bs-toggle="modal" data-bs-target="#eliminarmodal"><i
-                                        class="bi bi-pencil-square"></i></button>
-                            </td>
-                        </tr>
                         </tbody>
                     </table>
                 </div>
@@ -266,6 +214,27 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="eliminarevento" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Eliminar Evento</h1>
+            </div>
+            <div class="modal-body">
+                ¿Seguro que Deseas Eliminar este Evento?
+                <input type="hidden" id="input-evento-id">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-target="#modaleventos"
+                        data-bs-toggle="modal">
+                    Volver
+                </button>
+                <button type="button" class="btn btn-danger" id="btn-confirmar-eliminacionevento">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="modal fade" id="agregarevento" tabindex="-1" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
     <div class="modal-dialog">
@@ -274,20 +243,16 @@
                 <h1 class="modal-title fs-5" id="exampleModalLabel">Agregar Evento</h1>
             </div>
             <div class="modal-body">
-                <form class="needs-validation">
+                <form>
                     <div class="mb-3">
                         <label for="inputEvento" class="form-label">Nombre del Evento</label>
-                        <input type="text" class="form-control form-evento" id="inputEvento" required>
+                        <input type="text" class="form-control form-evento" id="inputEvento" required maxlength="30">
                     </div>
                     <div class="mb-3">
-                        <label for="validationCustom" class="form-label">Lugar</label>
-                        <select class="form-select" id="validationCustom" required>
-                            <option selected disabled value="">Choose...</option>
-                            <option>...</option>
+                        <label for="salas" class="form-label">Lugar</label>
+                        <select class="form-select" name="salas" id="salas" required>
+                            <option selected disabled value="">Elige una Ubicacion</option>
                         </select>
-                        <div class="invalid-feedback">
-                            Please select a valid state.
-                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="datetimefecha" class="form-label">Selecciona la Fecha del Evento</label>
@@ -325,49 +290,119 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="editarEventoModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Evento</h1>
+            </div>
+            <div class="modal-body">
+                <form id="form-editar-evento">
+                    <input type="hidden" id="evento-id-editar">
+                    <div class="mb-3">
+                        <label for="inputEventoEdit" class="form-label">Nombre del Evento</label>
+                        <input type="text" class="form-control form-evento" id="inputEventoEdit" required
+                               maxlength="30">
+                    </div>
+                    <div class="mb-3">
+                        <label for="salasEditar" class="form-label">Lugar</label>
+                        <select class="form-select" name="salas" id="salasEditar" required>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="datetimefechaEdit" class="form-label">Selecciona la Fecha del Evento</label>
+                        <div class="input-group" id="datetimefechaEdit" data-td-target-input="nearest"
+                             data-td-target-toggle="nearest">
+                            <input type="text" class="form-control datetimepicker-input"
+                                   data-td-target="#datetimefechaEdit" required/>
+                            <span class="input-group-text" data-td-target="#datetimepicker"
+                                  data-td-toggle="datetimepicker">
+                                    <i class="bi bi-calendar-event-fill"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="datetimenotificacionEdit" class="form-label">Notificacion del Evento</label>
+                        <div class="input-group" id="datetimenotificacionEdit" data-td-target-input="nearest"
+                             data-td-target-toggle="nearest">
+                            <input type="text" class="form-control datetimepicker-input"
+                                   data-td-target="#datetimenotificacionEdit" required/>
+                            <span class="input-group-text" data-td-target="#datetimepicker"
+                                  data-td-toggle="datetimepicker">
+                                    <i class="bi bi-calendar-event-fill"></i>
+                            </span>
+                        </div>
+                        <div id="liveAlertPlaceholder"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-target="#modaleventos"
+                        data-bs-toggle="modal">
+                    Volver
+                </button>
+                <button type="button" class="btn btn-primary" id="btn-editarEvento">Editar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="liveToast" class="toast text-bg-danger" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header text-bg-danger">
+            <strong class="me-auto">Alerta</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            La Fecha de Notificación no Puede ser Posterior a la Fecha del Evento.
+        </div>
+    </div>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/js/tempus-dominus.min.js"
         crossorigin="anonymous"></script>
 <script src="{% static 'js/inicio.js' %}"></script>
+<script src="{% static 'js/scroll.js' %}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        new tempusDominus.TempusDominus(document.getElementById('datetimenotificacion'),
-            {
-                display: {
-                    icons: {
-                        type: 'icons',
-                        time: 'bi bi-clock',
-                        date: 'bi bi-calendar4',
-                        up: 'bi bi-arrow-up',
-                        down: 'bi bi-arrow-down',
-                        previous: 'bi bi-chevron-left',
-                        next: 'bi bi-chevron-right',
-                        today: 'fa-solid fa-calendar-check',
-                        clear: 'fa-solid fa-trash',
-                        close: 'fa-solid fa-xmark'
-                    }
-                }
+        var config = {
+            display: {
+                icons: {
+                    time: 'bi bi-clock',
+                    date: 'bi bi-calendar4',
+                    up: 'bi bi-arrow-up',
+                    down: 'bi bi-arrow-down',
+                    previous: 'bi bi-chevron-left',
+                    next: 'bi bi-chevron-right',
+                    today: 'fa-solid fa-calendar-check',
+                    clear: 'fa-solid fa-trash',
+                    close: 'fa-solid fa-xmark'
+                },
+                components: {
+                    calendar: true,
+                    date: true,
+                    month: true,
+                    year: true,
+                    decades: true,
+                    clock: true,
+                    hours: true,
+                    minutes: true,
+                    seconds: false,
+                },
+            },
+            localization: {
+                locale: 'es',
+                format: 'dd/MM/yyyy HH:mm',
+                hourCycle: 'h23',
+            }
+        };
 
-            })
-        new tempusDominus.TempusDominus(document.getElementById('datetimefecha'),
-            {
-                display: {
-                    icons: {
-                        type: 'icons',
-                        time: 'bi bi-clock',
-                        date: 'bi bi-calendar4',
-                        up: 'bi bi-arrow-up',
-                        down: 'bi bi-arrow-down',
-                        previous: 'bi bi-chevron-left',
-                        next: 'bi bi-chevron-right',
-                        today: 'fa-solid fa-calendar-check',
-                        clear: 'fa-solid fa-trash',
-                        close: 'fa-solid fa-xmark'
-                    }
-                }
-
-            })
-
+        // Aplicar Tempus Dominus a cada datetimepicker
+        new tempusDominus.TempusDominus(document.getElementById('datetimenotificacion'), config);
+        new tempusDominus.TempusDominus(document.getElementById('datetimefecha'), config);
+        new tempusDominus.TempusDominus(document.getElementById('datetimenotificacionEdit'), config);
+        new tempusDominus.TempusDominus(document.getElementById('datetimefechaEdit'), config);
     });
+
 </script>
 <div id="map"></div>
 <script>
