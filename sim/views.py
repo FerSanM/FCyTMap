@@ -7,7 +7,8 @@ from django.views.decorators.http import require_http_methods
 from .models import User, Carrera, Actividades
 from django.http import HttpResponse, JsonResponse
 from django.utils import timezone
-
+from django.shortcuts import redirect
+from django.contrib.auth import logout
 from .models import User, Carrera, Sala
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -26,14 +27,16 @@ from django.views.decorators.csrf import csrf_protect
 from .models import RelacionUsuarioMateria, RelacionMateriaSala
 from django.contrib.auth.models import User
 from allauth.socialaccount.models import SocialAccount
+from django.shortcuts import render
 
 GOOGLE_OAUTH_CLIENT_ID = "425881363668-uga1n538hfcmijovqjbu70hnpmne6ij4.apps.googleusercontent.com"
-
 
 def sign_in(request):
     return render(request, 'sign_in.html')
 
-
+def custom_logout(request):
+    logout(request)
+    return redirect('login')
 def inicio(request):
     usuario = request.user
     ubicaciones = Sala.objects.all()
@@ -51,15 +54,27 @@ def inicio(request):
 
     iduser = request.user.id
     materias_seleccionadas = Materia.objects.filter(relacionusuariomateria__usuario__id=iduser)
+    actividades_usuario = Actividades.objects.filter()
     # Consulta utilizando el ORM de Django
     ids_materias_relacionadas = [relacion.materia_id for relacion in relaciones_sala_materia]
     # print("Los ID de materia",ids_materias_relacionadas)
     materias_filtradas = materias_seleccionadas.filter(id__in=ids_materias_relacionadas)
+
+    ahora = timezone.localtime(timezone.now())
+    inicio_hoy = ahora.replace(hour=0, minute=0, second=0, microsecond=0)
+    fin_hoy = ahora.replace(hour=23, minute=59, second=59, microsecond=999999)
+
+    eventos = Actividades.objects.filter(
+        idUsuario=iduser,
+        fecha_actividad__lte=ahora,
+        fecha_actividad__range=(inicio_hoy, fin_hoy))
+
     return render(request, 'inicio.html', {
         'ubicaciones': ubicaciones,
         'relaciones': relaciones_sala_materia,
         'materias_usuario': materias_filtradas,
         'userdata': userdata,
+        'eventos': eventos
     })
 
 

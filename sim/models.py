@@ -74,7 +74,8 @@ class Sala(models.Model):
 
     def __str__(self):
         return f"{self.descripcion}-{self.latitud}-{self.longitud}"
-
+    class Meta:
+        ordering = ['descripcion']
 
 
 class Actividades(models.Model):
@@ -85,6 +86,8 @@ class Actividades(models.Model):
     fecha_actividad = models.DateTimeField()
     fecha_notificacion = models.DateTimeField()
 
+    def __str__(self):
+        return f"{self.descripcion}"
 class RelacionUsuarioMateria(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     materia = models.ForeignKey(Materia, on_delete=models.CASCADE)

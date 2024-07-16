@@ -35,12 +35,29 @@ const listarNotificaciones = async () => {
             notificaciones.forEach((notificacion) => {
                 const fechaFormateada = formatDate(notificacion.fecha_actividad);
                 const diasFaltantes = calculateDaysDifference(notificacion.fecha_actividad);
+                let actividadFin = new Date(notificacion.fecha_actividad);
+                actividadFin.setHours(23, 59, 59, 999);
                 let mensajeDias = '';
+
                 if (new Date() >= new Date(notificacion.fecha_actividad)) {
-                    mensajeDias = 'Finalizado';
+                    console.log(new Date());
+                    console.log(new Date(notificacion.fecha_actividad));
+                    console.log(actividadFin);
+                    if (new Date() >= new Date(notificacion.fecha_actividad) && new Date()<=actividadFin){
+                        mensajeDias = 'En Curso'
+                    }else{
+                        mensajeDias = 'Finalizado';
+                    }
                 } else {
-                    mensajeDias = `Faltan ${diasFaltantes} días para el evento`;
+                    if(diasFaltantes>=1){
+                            mensajeDias = `Faltan ${diasFaltantes} dias  para el evento`;
+                    }else{
+                        const horasfaltantes = calculateHoursDifference(notificacion.fecha_actividad);
+                        mensajeDias = `Faltan ${horasfaltantes}  para el evento`;
+                    }
+
                 }
+
                 opciones += `
                     <li class="li-noti">
                         <a class="dropdown-item" href="#">
@@ -603,4 +620,26 @@ const calculateDaysDifference = (futureDate) => {
     const targetDate = new Date(futureDate);
     const diffDays = Math.round((targetDate - currentDate) / oneDay);
     return diffDays;
+};
+const calculateHoursDifference = (futureDate) => {
+    const oneHour = 60 * 60 * 1000; // minutos * segundos * milisegundos
+    const oneMinute = 60 * 1000; // segundos * milisegundos
+    const oneSecond = 1000; // milisegundos
+    const currentDate = new Date();
+    const targetDate = new Date(futureDate);
+    const diffMilliseconds = targetDate - currentDate;
+
+    const diffHours = diffMilliseconds / oneHour;
+
+    if (Math.abs(diffHours) >= 1) {
+        return `${Math.round(diffHours)} horas`;
+    } else if (Math.abs(diffMilliseconds) >= oneMinute) {
+        const diffMinutes = diffMilliseconds / oneMinute;
+        if(diffMinutes>1){
+            return `${Math.round(diffMinutes)} minutos`;
+        }else{
+            return `${Math.round(diffMinutes)} minuto`;
+        }
+
+    }
 };
