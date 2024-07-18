@@ -80,14 +80,15 @@ class Sala(models.Model):
 
 class Actividades(models.Model):
     id = models.AutoField(primary_key=True)
-    descripcion = models.CharField(max_length=50)
-    idSala = models.ForeignKey(Sala, on_delete=models.CASCADE)
-    idUsuario = models.ForeignKey(User, on_delete=models.CASCADE)
-    fecha_actividad = models.DateTimeField()
-    fecha_notificacion = models.DateTimeField()
+    descripcion = models.CharField(max_length=50,null=False)
+    idSala = models.ForeignKey(Sala, on_delete=models.CASCADE,null=False)
+    idUsuario = models.ForeignKey(User, on_delete=models.CASCADE,null=False)
+    fecha_actividad = models.DateTimeField(null=False)
+    fecha_notificacion = models.DateTimeField(null=False)
+    vistousuario = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"{self.descripcion}"
+        return self.descripcion
 class RelacionUsuarioMateria(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     materia = models.ForeignKey(Materia, on_delete=models.CASCADE)
@@ -109,5 +110,4 @@ class RelacionMateriaSala(models.Model):
 
     def __str__(self):
         return f"{self.materia} - {self.sala} -{self.dia_semana}: {self.hora_entrada}-{self.hora_salida})"
-
 

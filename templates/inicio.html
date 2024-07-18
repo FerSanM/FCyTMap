@@ -22,7 +22,7 @@
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
             crossorigin=""></script>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-
+   
 </head>
 <body>
 
@@ -94,9 +94,13 @@
         </div>
     </div>
     <div class="btn-group dropstart">
-        <a class="btn btn-notificacion" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bi bi-bell"></i>
+        <a class="btn btn-notificacion" id="btnvisto" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i  class="bi bi-bell"></i>
+            <div id="iconnoti">
+                
+            </div>
         </a>
+
         <ul class="dropdown-menu overflow-auto mb-3" id="notif">
         </ul>
     </div>
@@ -104,6 +108,7 @@
         <div>
             <img id="imguser" src="{{ userdatas.extra_data.picture }}" alt="User Picture">
         </div>
+
     {% endfor %}
 </nav>
 <div class="modal modal-lg fade" id="modalmaterias" data-bs-keyboard="true"

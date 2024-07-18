@@ -5,7 +5,7 @@ from django.db import connection
 from django.views.decorators.http import require_http_methods
 
 from .models import User, Carrera, Actividades
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, Http404
 from django.utils import timezone
 from django.shortcuts import redirect
 from django.contrib.auth import logout
@@ -127,11 +127,11 @@ def auth_receiver(request):
     return redirect('inicio', )
 
 
-def sign_out(request):
+"""def sign_out(request):
     del request.session['user_data']
     print("Sesion Cerrada")
     return redirect('sign_in')
-
+"""
 
 def login(request):
     return render(request, 'login.html')
@@ -249,9 +249,10 @@ def guardar_evento(request):
                 return JsonResponse({'message': 'Sala no encontrada'}, status=400)
         else:
             return JsonResponse({'message': 'Datos incompletos'}, status=400)
-    return JsonResponse({'message': 'Método no permitido'}, status=405)
+    raise Http404("Página no encontrada")
 
 
+"""
 def eliminar_materias(request):
     if request.method == 'POST':
         usuario_id = request.POST.get('usuario_id')
@@ -265,9 +266,11 @@ def eliminar_materias(request):
                 return redirect('mostrar_materias')
             except RelacionUsuarioMateria.DoesNotExist:
                 return redirect('mostrar_materias')
-
-
+"""
+@csrf_exempt
 def get_carreras(request):
+    if request.headers.get('Authorization') != 'Bearer my_secret_token':
+        raise Http404("Página no encontrada")
     carreras = list(Carrera.objects.values())
 
     if len(carreras) > 0:
@@ -277,8 +280,10 @@ def get_carreras(request):
 
     return JsonResponse(data)
 
-
+@csrf_exempt
 def get_materias(request, idcarrera, semestre):
+    if request.headers.get('Authorization') != 'Bearer my_secret_token':
+        raise Http404("Página no encontrada")
     materias = list(Materia.objects.filter(idCarrera=idcarrera, semestre=semestre).values())
 
     if len(materias) > 0:
@@ -322,8 +327,10 @@ def eliminar_evento(request, evento_id):
         # Si ocurre algún otro error, devolver un error genérico
         return JsonResponse({'error': 'Hubo un problema al eliminar el evento'}, status=500)
 
-
+@csrf_exempt
 def get_tabla(request):
+    if request.headers.get('Authorization') != 'Bearer my_secret_token':
+        raise Http404("Página no encontrada")
     usuario = request.user
     if usuario:
         id_usuario = usuario.id
@@ -354,6 +361,8 @@ def get_tabla(request):
 
 
 def get_tablaeventos(request):
+    if request.headers.get('Authorization') != 'Bearer my_secret_token':
+        raise Http404("Página no encontrada")
     usuario = request.user
     if usuario:
         id_usuario = usuario.id
@@ -381,7 +390,10 @@ def get_tablaeventos(request):
         return JsonResponse({'message': 'Usuario no encontrado'})
 
 
+
 def get_notificaciones(request):
+    if request.headers.get('Authorization') != 'Bearer my_secret_token':
+        raise Http404("Página no encontrada")
     usuario = request.user
     if usuario:
         id_usuario = usuario.id
@@ -407,8 +419,10 @@ def get_notificaciones(request):
 
         return JsonResponse(data)
 
-
+@csrf_exempt
 def get_sala(request):
+    if request.headers.get('Authorization') != 'Bearer my_secret_token':
+        raise Http404("Página no encontrada")
     salas = list(Sala.objects.values())
 
     if len(salas) > 0:
@@ -448,6 +462,8 @@ def get_actividades(request):
 
 
 def obtener_evento(request, evento_id):
+    if request.headers.get('Authorization') != 'Bearer my_secret_token':
+        raise Http404("Página no encontrada")
     try:
         evento = get_object_or_404(Actividades, id=evento_id)
 
@@ -511,4 +527,29 @@ def editar_evento(request):
                 return JsonResponse({'message': f'Error de formato de fecha: {str(e)}'}, status=400)
         else:
             return JsonResponse({'message': 'Datos incompletos'}, status=400)
-    return JsonResponse({'message': 'Método no permitido'}, status=405)
+    raise Http404("Error")
+
+
+def marcar_visto(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            evento_id = data.get('id')
+            if evento_id:
+                try:
+                    evento = Actividades.objects.get(id=evento_id)
+                    evento.vistousuario = 1  # Marca como visto por el usuario
+                    evento.save()
+                    return JsonResponse({'message': 'Evento marcado como visto correctamente'})
+                except Actividades.DoesNotExist:
+                    return JsonResponse({'message': 'Evento no encontrado'}, status=400)
+                except Exception as e:
+                    return JsonResponse({'message': str(e)}, status=500)
+            else:
+                return JsonResponse({'message': 'Datos incompletos'}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({'message': 'JSON inválido'}, status=400)
+    else:
+        return JsonResponse({'message': 'Método no permitido'}, status=405)
+
+

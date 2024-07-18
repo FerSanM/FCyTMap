@@ -2,11 +2,11 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('sign_in', views.sign_in, name='sign_in'),
 
-    path('sign-out', views.sign_out, name='sign_out'),
+
+    #path('sign-out', views.sign_out, name='sign_out'),
     # path('materias/', views.mostrar_materias, name='mostrar_materias'),
-    path('auth-receiver', views.auth_receiver, name='auth_receiver'),
+    #path('auth-receiver', views.auth_receiver, name='auth_receiver'),
     path('inicio/guardar_materias/', views.guardar_materias, name='guardar_materias'),
     path('inicio/carreras/', views.get_carreras, name='get_carreras'),
     path('inicio/materias/<int:idcarrera>/<int:semestre>', views.get_materias, name='get_materias'),
@@ -18,6 +18,9 @@ urlpatterns = [
     path('inicio/listarsalas/', views.get_sala, name='get_sala'),
     path('inicio/obtener_evento/<int:evento_id>/', views.obtener_evento, name='obtener_evento'),
     path('inicio/editar_evento/', views.editar_evento, name='editar_evento'),
+    path('inicio/marcar_visto/', views.marcar_visto, name='marcar_visto'),
     path('inicio/guardar_evento/', views.guardar_evento, name='guardar_evento'),
     path('custom_logout/', views.custom_logout, name='custom_logout'),
+
+
 ]

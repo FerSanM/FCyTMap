@@ -1,6 +1,11 @@
 const listarMaterias = async (idCarrera, Semestre) => {
     try {
-        const response = await fetch(`materias/${idCarrera}/${Semestre}`);
+        const response = await fetch(`materias/${idCarrera}/${Semestre}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer my_secret_token'
+            }
+        });
         const data = await response.json();
         console.log(data);
 
@@ -21,14 +26,22 @@ const listarMaterias = async (idCarrera, Semestre) => {
         console.log(error);
     }
 }
+
 const listarNotificaciones = async () => {
     try {
-        const response = await fetch("notificaciones/");
+        const response = await fetch("notificaciones/", {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer my_secret_token'
+            }
+        });
         const data = await response.json();
         console.log(data);
 
         if (data.message === "Success") {
             let opciones = ``;
+            let alerta = '';
+            let tieneNotificacionesNoVistas = false;
             const maxNotificaciones = 6; // Máximo de notificaciones a mostrar
             const notificaciones = data.notificaciones.slice(0, maxNotificaciones);
 
@@ -38,26 +51,24 @@ const listarNotificaciones = async () => {
                 let actividadFin = new Date(notificacion.fecha_actividad);
                 actividadFin.setHours(23, 59, 59, 999);
                 let mensajeDias = '';
+                if (notificacion.vistousuario === 0) {
+                    tieneNotificacionesNoVistas = true;
+                }
 
                 if (new Date() >= new Date(notificacion.fecha_actividad)) {
-                    console.log(new Date());
-                    console.log(new Date(notificacion.fecha_actividad));
-                    console.log(actividadFin);
-                    if (new Date() >= new Date(notificacion.fecha_actividad) && new Date()<=actividadFin){
+                    if (new Date() >= new Date(notificacion.fecha_actividad) && new Date() <= actividadFin) {
                         mensajeDias = 'En Curso'
-                    }else{
+                    } else {
                         mensajeDias = 'Finalizado';
                     }
                 } else {
-                    if(diasFaltantes>=1){
-                            mensajeDias = `Faltan ${diasFaltantes} dias  para el evento`;
-                    }else{
+                    if (diasFaltantes >= 1) {
+                        mensajeDias = `Faltan ${diasFaltantes} días para el evento`;
+                    } else {
                         const horasfaltantes = calculateHoursDifference(notificacion.fecha_actividad);
                         mensajeDias = `Faltan ${horasfaltantes}  para el evento`;
                     }
-
                 }
-
                 opciones += `
                     <li class="li-noti">
                         <a class="dropdown-item" href="#">
@@ -68,13 +79,21 @@ const listarNotificaciones = async () => {
                                 <div class="content-noti">
                                     <span style="font-size: 12px">Notificación de Evento</span><br>
                                     <span><b>${notificacion.descripcion}</b></span><br>
-                                     <span style="font-size: 12px">${mensajeDias}</span>
+                                    <span style="font-size: 12px">${mensajeDias}</span>
+                                     
                                 </div>
                             </div>
                         </a>
                     </li>`;
             });
-
+            if(tieneNotificacionesNoVistas){
+                    alerta = "<span class=\"position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger\">\n" +
+                        "                !\n" +
+                        "                <span class=\"visually-hidden\">Notificaciones</span>"
+                    iconnoti.innerHTML = alerta
+            }else{
+                iconnoti.innerHTML = alerta
+            }
             // Verificar si hay más de 5 notificaciones para mostrar el "Ver Más"
             opciones += `
                     <li class="fixed-footer">
@@ -86,7 +105,7 @@ const listarNotificaciones = async () => {
             document.getElementById('notif').innerHTML = opciones;
 
         } else {
-            alert("Datos no encontrados");
+            //alert("Sin Notificaciones Pendientes");
         }
     } catch (error) {
         console.log(error);
@@ -94,9 +113,15 @@ const listarNotificaciones = async () => {
 };
 
 
+
 const listarCarreras = async () => {
     try {
-        const response = await fetch("carreras/");
+        const response = await fetch("carreras/", {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer my_secret_token'
+            }
+        });
         const data = await response.json();
         console.log(data);
 
@@ -118,7 +143,12 @@ const listarCarreras = async () => {
 };
 const listarsalas = async () => {
     try {
-        const response = await fetch("listarsalas/");
+        const response = await fetch("listarsalas/", {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer my_secret_token'
+            }
+        });
         const sala = await response.json();
         console.log(sala);
 
@@ -141,7 +171,12 @@ const listarsalas = async () => {
 };
 const listarsalasedit = async () => {
     try {
-        const response = await fetch("listarsalas/");
+       const response = await fetch("listarsalas/", {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer my_secret_token'
+            }
+        });
         const sala = await response.json();
         console.log(sala);
 
@@ -181,7 +216,12 @@ const mostrarsemestre = () => {
 
 mostrarTabla = async () => {
     try {
-        const response = await fetch("tabla/");
+        const response = await fetch("tabla/",{
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer my_secret_token'
+            }
+        });
         const data = await response.json();
         console.log(data);
 
@@ -222,7 +262,12 @@ mostrarTabla = async () => {
 
 mostrarTablaEventos = async () => {
     try {
-        const response = await fetch("tabla_eventos/");
+        const response = await fetch("tabla_eventos/",{
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer my_secret_token'
+            }
+        });
         const datas = await response.json();
         console.log(datas);
 
@@ -273,7 +318,7 @@ mostrarTablaEventos = async () => {
                              </tr>`;
             tableeventos.innerHTML = opciones
         } else {
-            alert("No hay datos")
+            //alert("No hay datos")
         }
     } catch (error) {
         console.log(error);
@@ -281,7 +326,12 @@ mostrarTablaEventos = async () => {
 }
 const obtenerYMostrarDatosEvento = async (eventoidedit) => {
     try {
-        const response = await fetch(`obtener_evento/${eventoidedit}/`);
+        const response = await fetch(`obtener_evento/${eventoidedit}/`,{
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer my_secret_token'
+            }
+        });
         const data = await response.json();
         console.log(data)
 
@@ -315,6 +365,7 @@ const cargaInicial = async () => {
     await listarsalasedit();
     await mostrarTablaEventos();
     await listarNotificaciones();
+
     await listarMaterias(idCarreraInicial, semestreInicial); // Llamar a listarMaterias con valores iniciales
 
     carrera.addEventListener("change", async (event) => {
@@ -582,6 +633,61 @@ const cargaInicial = async () => {
             alert('Error al actualizar el evento');
         }
     });
+document.getElementById('btnvisto').addEventListener('click', async function() {
+    try {
+        const response = await fetch("notificaciones/", {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer my_secret_token'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Error en la solicitud de notificaciones');
+        }
+
+        const data = await response.json();
+        console.log("Datos obtenidos:", data);
+
+         if (data.message === "Not Found") {
+            console.log('Notificaciones no encontradas, proceso abortado.');
+            return;  // Salir de la función si el mensaje es "Not Found"
+        }
+        const promises = data.notificaciones.map(async (notificacion) => {
+            if (notificacion.id) {
+                const requestData = { id: notificacion.id };
+                const postResponse = await fetch('marcar_visto/', {
+                    method: 'POST',
+                    body: JSON.stringify(requestData),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    }
+                });
+
+                if (!postResponse.ok) {
+                    const errorData = await postResponse.json();
+                    console.error('Error en la respuesta:', errorData);
+                    alert('Error en la respuesta del servidor');
+                } else {
+                    const result = await postResponse.json();
+                    if (result.message !== 'Evento marcado como visto correctamente') {
+                        alert(result.message);
+                    }
+                }
+            }
+        });
+
+        await Promise.all(promises);
+        console.log('Todas las notificaciones marcadas como vistas');
+        listarNotificaciones();
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error al actualizar las notificaciones');
+    }
+});
+
+
 
 };
 
@@ -598,6 +704,7 @@ function hideErrorMessage() {
 
 window.addEventListener("load", async () => {
     await cargaInicial();
+
 });
 
 const formatDate = (isoDate) => {

@@ -19,4 +19,4 @@ urlpatterns = [
     path('inicio/', views.inicio, name='inicio'),
     path('iniciosin/', views.iniciosin, name='iniciosin'),
 ]
-urlpatterns += socialaccount_urls
+#urlpatterns += socialaccount_urls
