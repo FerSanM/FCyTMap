@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Inicio</title>
+    <link rel="icon" href="{% static 'img/Mapa_FCyTlogo.png' %}" type="image/x-icon">
     <script src="https://accounts.google.com/gsi/client" async></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -45,14 +46,16 @@
                 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar"
                      aria-labelledby="offcanvasNavbarLabel">
                     <div class="offcanvas-header">
-                        <h5 class="offcanvas-title" id="offcanvasNavbarLabel">MapaFCyT</h5>
+                        <h5 class="offcanvas-title" id="offcanvasNavbarLabel"><img width="55px" height="60px"
+                                                                                   src="{% static 'img/Mapa_FCyTcortado.jpg' %}">MapaFCyT
+                        </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="offcanvas"
                                 aria-label="Close"></button>
                     </div>
                     <div class="offcanvas-body" id="contenidoModal">
                         <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
                             <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="/materias/">Inicio</a>
+                                <a class="nav-link" aria-current="page" href="{% url 'inicio' %}">Inicio</a>
                             </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
@@ -70,7 +73,8 @@
 
                             </li>
                             <li class="nav-item">
-                                <a id="offsesion" class="nav-link" href="{% url 'custom_logout' %} ">Cerrar Sesion</a>
+                                <a id="offsesion" data-bs-toggle="modal" href="#"
+                                   data-bs-target="#cerrarsesionmodal" class="nav-link">Cerrar Sesion</a>
                             </li>
                         </ul>
                     </div>
@@ -112,6 +116,27 @@
 
     {% endfor %}
 </nav>
+<div class="modal fade" id="cerrarsesionmodal" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Cerrar Sesión</h1>
+            </div>
+            <div class="modal-body">
+                ¿Seguro que Deseas Cerrar Sesion?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Volver
+                </button>
+                <button type="button" class="btn btn-danger btn-cerrarSesion" onclick="location.href='{% url 'custom_logout' %}'">Confirmar
+
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="modal modal-lg fade" id="modalmaterias" data-bs-keyboard="true"
      tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="false">
     <div class="modal-dialog">
@@ -620,25 +645,25 @@
         }
     });
 
-/*
-eventos.forEach(function (evento) {
-    ubicaciones.forEach(function (ubicacion) {
-        if (evento[1] === ubicacion[3]) {
-            // Encontramos una coincidencia de idSala en eventos y ubicaciones
-            var marker = L.marker([ubicacion[0], ubicacion[1]], {icon: redIcon}).addTo(map);
+    /*
+    eventos.forEach(function (evento) {
+        ubicaciones.forEach(function (ubicacion) {
+            if (evento[1] === ubicacion[3]) {
+                // Encontramos una coincidencia de idSala en eventos y ubicaciones
+                var marker = L.marker([ubicacion[0], ubicacion[1]], {icon: redIcon}).addTo(map);
 
-            // Obtener el contenido del popup existente
-            var popupContent = marker.getPopup() ? marker.getPopup().getContent() : "";
+                // Obtener el contenido del popup existente
+                var popupContent = marker.getPopup() ? marker.getPopup().getContent() : "";
 
-            // Agregar contenido adicional al popup
-            popupContent += "<p>Tienes una actividad aquí</p>";
+                // Agregar contenido adicional al popup
+                popupContent += "<p>Tienes una actividad aquí</p>";
 
-            // Asignar el contenido al popup del marcador
-            marker.bindPopup(popupContent);
-        }
+                // Asignar el contenido al popup del marcador
+                marker.bindPopup(popupContent);
+            }
+        });
     });
-});
-*/
+    */
 
     var customControl = L.control.zoom({
         position: 'bottomright'

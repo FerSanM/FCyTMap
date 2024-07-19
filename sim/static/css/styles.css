@@ -235,6 +235,18 @@ body, html {
     padding: 40px 0;
 }
 
+.offcanvas-body {
+    padding-top: 0;
+}
+
+.nav-link:hover {
+    color: #3388ff;
+}
+
+.btn-cerrarSesion > a {
+    text-decoration: none;
+    color: white;
+}
 
 #notif::-webkit-scrollbar {
     width: 7px;
