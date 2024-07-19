@@ -22,7 +22,7 @@
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
             crossorigin=""></script>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-   
+
 </head>
 <body>
 
@@ -70,7 +70,7 @@
 
                             </li>
                             <li class="nav-item">
-                                <a id="offsesion"class="nav-link" href="{% url 'custom_logout' %} " >Cerrar Sesion</a>
+                                <a id="offsesion" class="nav-link" href="{% url 'custom_logout' %} ">Cerrar Sesion</a>
                             </li>
                         </ul>
                     </div>
@@ -94,10 +94,11 @@
         </div>
     </div>
     <div class="btn-group dropstart">
-        <a class="btn btn-notificacion" id="btnvisto" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i  class="bi bi-bell"></i>
+        <a class="btn btn-notificacion" id="btnvisto" href="#" role="button" data-bs-toggle="dropdown"
+           aria-expanded="false">
+            <i class="bi bi-bell"></i>
             <div id="iconnoti">
-                
+
             </div>
         </a>
 
@@ -149,6 +150,7 @@
                     <thead>
                     <tr>
                         <th>Materia</th>
+                        <th class="text-center">Carrera</th>
                         <th class="text-center">Semestre</th>
                         <th class="text-center">Acciones</th>
                     </tr>
@@ -371,6 +373,7 @@
         crossorigin="anonymous"></script>
 <script src="{% static 'js/inicio.js' %}"></script>
 <script src="{% static 'js/scroll.js' %}"></script>
+<div id="map"></div>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var config = {
@@ -413,7 +416,6 @@
     });
 
 </script>
-<div id="map"></div>
 <script>
     var greenIcon = new L.Icon({
         iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
@@ -512,7 +514,7 @@
     {% endfor %}
     console.log(usuariorelaciones)
     {% for relacion in relaciones %}
-        relaciones.push(["{{ relacion.materia.descripcion}}", {{ relacion.sala.id }}, "{{ relacion.hora_entrada|time:"H:i" }}", "{{ relacion.hora_salida|time:"H:i" }}", {{ relacion.dia_semana.id }}, "{{ relacion.dia_semana.descripcion }}", "{{ relacion.materia.idCarrera.descripcion }}", {{ relacion.materia.id }}]);
+        relaciones.push(["{{ relacion.materia.descripcion }}", {{ relacion.sala.id }}, "{{ relacion.hora_entrada|time:"H:i" }}", "{{ relacion.hora_salida|time:"H:i" }}", {{ relacion.dia_semana.id }}, "{{ relacion.dia_semana.descripcion }}", "{{ relacion.materia.idCarrera.descripcion }}", {{ relacion.materia.id }}]);
     {% endfor %}
     {% for ubicacion in ubicaciones %}
         L.marker([{{ ubicacion.latitud }}, {{ ubicacion.longitud }}]).addTo(map)
@@ -520,9 +522,9 @@
         ubicaciones.push([{{ ubicacion.latitud }}, {{ ubicacion.longitud }}, "{{ ubicacion.descripcion }}", {{ ubicacion.id }}]);
     {% endfor %}
     {% for evento in eventos %}
-         eventos.push(["{{ evento.descripcion }}",{{evento.idSala.id }}])
+        eventos.push(["{{ evento.descripcion }}", {{evento.idSala.id }}])
     {% endfor %}
-    console.log("Eventos",eventos)
+    console.log("Eventos", eventos)
     L.control.scale().addTo(map);
     console.log("AULAS", ubicaciones)
     console.log("AULAS CON MATERIAS", relaciones)
@@ -542,81 +544,81 @@
     }
 
 
-// Modifica la función para devolver la descripción del evento si existe una coincidencia
-// Modifica la función para devolver una lista de descripciones de eventos si existe una coincidencia
-function obtenerDescripcionEventosPorSala(idSala) {
-    // Filtrar los eventos que coinciden con el idSala
-    var eventosCoincidentes = eventos.filter(function (evento) {
-        return evento[1] === idSala;
-    });
-
-    // Si hay eventos coincidentes, devolver la lista de descripciones
-    if (eventosCoincidentes.length > 0) {
-        return eventosCoincidentes.map(function (evento) {
-            return evento[0]; // Descripción del evento
+    // Modifica la función para devolver la descripción del evento si existe una coincidencia
+    // Modifica la función para devolver una lista de descripciones de eventos si existe una coincidencia
+    function obtenerDescripcionEventosPorSala(idSala) {
+        // Filtrar los eventos que coinciden con el idSala
+        var eventosCoincidentes = eventos.filter(function (evento) {
+            return evento[1] === idSala;
         });
-    } else {
-        return []; // No hay eventos coincidentes
+
+        // Si hay eventos coincidentes, devolver la lista de descripciones
+        if (eventosCoincidentes.length > 0) {
+            return eventosCoincidentes.map(function (evento) {
+                return evento[0]; // Descripción del evento
+            });
+        } else {
+            return []; // No hay eventos coincidentes
+        }
     }
-}
 
-// Procesa ubicaciones y actualiza el contenido del popup
-ubicaciones.forEach(function (ubicacion) {
-    var marker = L.marker([ubicacion[0], ubicacion[1]]).addTo(map);
-    marker.bindPopup(ubicacion[2]);
+    // Procesa ubicaciones y actualiza el contenido del popup
+    ubicaciones.forEach(function (ubicacion) {
+        var marker = L.marker([ubicacion[0], ubicacion[1]]).addTo(map);
+        marker.bindPopup(ubicacion[2]);
 
-    var relacionesDeSala = relaciones.filter(function (relacion) {
-        return relacion[1] === ubicacion[3];
-    });
+        var relacionesDeSala = relaciones.filter(function (relacion) {
+            return relacion[1] === ubicacion[3];
+        });
 
-    relacionesDeSala.forEach(function (relacion) {
-        var materiaContent = "</br><b>Materia:</b> " + relacion[0];
-        var desdeContent = "<b>Desde:</b> " + relacion[2];
-        var hastaContent = "<b>Hasta:</b> " + relacion[3];
-        var carreraContent = "<b>Carrera:</b> " + relacion[6];
+        relacionesDeSala.forEach(function (relacion) {
+            var materiaContent = "</br><b>Materia:</b> " + relacion[0];
+            var desdeContent = "<b>Desde:</b> " + relacion[2];
+            var hastaContent = "<b>Hasta:</b> " + relacion[3];
+            var carreraContent = "<b>Carrera:</b> " + relacion[6];
 
-        var hayClase = existeCoincidencia();
+            var hayClase = existeCoincidencia();
 
-        // Inicializamos popupContent con el contenido estándar
-        var popupContent = materiaContent + "<br>" + desdeContent + "<br>" + hastaContent + "<br>" + carreraContent;
+            // Inicializamos popupContent con el contenido estándar
+            var popupContent = materiaContent + "<br>" + desdeContent + "<br>" + hastaContent + "<br>" + carreraContent;
 
-        // Recorremos todas las relaciones del usuario
-        for (var i = 0; i < usuariorelaciones.length; i++) {
-            if (hayClase && relacion[7] === usuariorelaciones[i][0]) {
-                popupContent = "<br><b>Tienes Clase Ahora</b>" + materiaContent + "<br>" + desdeContent + "<br>" + hastaContent + "<br>" + carreraContent;
-                marker.setIcon(orangeIcon);
-                break; // Si ya encontramos una coincidencia, salimos del bucle
+            // Recorremos todas las relaciones del usuario
+            for (var i = 0; i < usuariorelaciones.length; i++) {
+                if (hayClase && relacion[7] === usuariorelaciones[i][0]) {
+                    popupContent = "<br><b>Tienes Clase Ahora</b>" + materiaContent + "<br>" + desdeContent + "<br>" + hastaContent + "<br>" + carreraContent;
+                    marker.setIcon(orangeIcon);
+                    break; // Si ya encontramos una coincidencia, salimos del bucle
+                }
+            }
+
+            // Agregar el contenido al popup
+            marker.bindPopup(marker.getPopup().getContent() + popupContent);
+        });
+
+        // Verificar si hay eventos que coincidan con la ubicación y agregar mensaje adicional
+        var descripcionesEventos = obtenerDescripcionEventosPorSala(ubicacion[3]);
+
+        if (descripcionesEventos.length > 0) {
+            // Obtener el contenido del popup existente
+            var currentPopupContent = marker.getPopup().getContent();
+
+            // Crear una lista con las descripciones de los eventos
+            var listaDescripciones = descripcionesEventos.map(function (descripcion) {
+                return "<li>" + descripcion + "</li>";
+            }).join("");
+
+            // Agregar contenido adicional al popup
+            currentPopupContent += "<br><b>Actividades en curso</b><br><ul>" + listaDescripciones + "</ul>";
+
+            // Actualizar el popup del marcador con el contenido adicional
+            marker.bindPopup(currentPopupContent);
+
+            // Cambiar el ícono del marcador si no es orangeIcon
+            if (marker.options.icon !== orangeIcon) {
+                marker.setIcon(redIcon);
             }
         }
-
-        // Agregar el contenido al popup
-        marker.bindPopup(marker.getPopup().getContent() + popupContent);
     });
-
-    // Verificar si hay eventos que coincidan con la ubicación y agregar mensaje adicional
-    var descripcionesEventos = obtenerDescripcionEventosPorSala(ubicacion[3]);
-
-    if (descripcionesEventos.length > 0) {
-        // Obtener el contenido del popup existente
-        var currentPopupContent = marker.getPopup().getContent();
-
-        // Crear una lista con las descripciones de los eventos
-        var listaDescripciones = descripcionesEventos.map(function (descripcion) {
-            return "<li>" + descripcion + "</li>";
-        }).join("");
-
-        // Agregar contenido adicional al popup
-        currentPopupContent += "<br><b>Actividades en curso</b><br><ul>" + listaDescripciones + "</ul>";
-
-        // Actualizar el popup del marcador con el contenido adicional
-        marker.bindPopup(currentPopupContent);
-
-        // Cambiar el ícono del marcador si no es orangeIcon
-        if (marker.options.icon !== orangeIcon) {
-            marker.setIcon(redIcon);
-        }
-    }
-});
 
 /*
 eventos.forEach(function (evento) {
@@ -673,7 +675,6 @@ eventos.forEach(function (evento) {
     } else {
         alert("Geolocation is not supported by this browser.");
     }
-    
 </script>
 </body>
 </html>

@@ -62,14 +62,24 @@ const listarNotificaciones = async () => {
                         mensajeDias = 'Finalizado';
                     }
                 } else {
-                    if (diasFaltantes >= 1) {
-                        mensajeDias = `Faltan ${diasFaltantes} días para el evento`;
+                    const [horasNumero] = calculateHoursDifference(notificacion.fecha_actividad).split(' ')
+                    let horas = horasNumero - 24
+                    if (horasNumero >= 24) {
+                        if (diasFaltantes === 1 && horas > 0) {
+                            mensajeDias = `Falta ${diasFaltantes} día ${horas} h para el evento`;
+                        } else if (horas === 0) {
+                            mensajeDias = `Falta ${diasFaltantes} día para el evento`;
+                        } else {
+                            mensajeDias = `Faltan ${diasFaltantes} días para el evento`;
+                        }
+
                     } else {
                         const horasfaltantes = calculateHoursDifference(notificacion.fecha_actividad);
                         mensajeDias = `Faltan ${horasfaltantes}  para el evento`;
                     }
                 }
-                opciones += `
+                if (mensajeDias !== 'Finalizado') {
+                    opciones += `
                     <li class="li-noti">
                         <a class="dropdown-item" href="#">
                             <div class="noti-container">
@@ -85,16 +95,18 @@ const listarNotificaciones = async () => {
                             </div>
                         </a>
                     </li>`;
+                }
             });
-            if(tieneNotificacionesNoVistas){
-                    alerta = "<span class=\"position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger\">\n" +
-                        "                !\n" +
-                        "                <span class=\"visually-hidden\">Notificaciones</span>"
-                    iconnoti.innerHTML = alerta
-            }else{
+            if (tieneNotificacionesNoVistas) {
+                alerta = `
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    !
+                    <span class="visually-hidden">Notificaciones</span>
+                </span>`;
+                document.getElementById('iconnoti').innerHTML = alerta;
+            } else {
                 iconnoti.innerHTML = alerta
             }
-            // Verificar si hay más de 5 notificaciones para mostrar el "Ver Más"
             opciones += `
                     <li class="fixed-footer">
                         <footer class="footer-noti">
@@ -111,7 +123,6 @@ const listarNotificaciones = async () => {
         console.log(error);
     }
 };
-
 
 
 const listarCarreras = async () => {
@@ -171,7 +182,7 @@ const listarsalas = async () => {
 };
 const listarsalasedit = async () => {
     try {
-       const response = await fetch("listarsalas/", {
+        const response = await fetch("listarsalas/", {
             method: 'GET',
             headers: {
                 'Authorization': 'Bearer my_secret_token'
@@ -216,7 +227,7 @@ const mostrarsemestre = () => {
 
 mostrarTabla = async () => {
     try {
-        const response = await fetch("tabla/",{
+        const response = await fetch("tabla/", {
             method: 'GET',
             headers: {
                 'Authorization': 'Bearer my_secret_token'
@@ -231,6 +242,7 @@ mostrarTabla = async () => {
             data.datos.forEach((dato) => {
                 opciones += `<tr>
                              <td>${dato.Materia}</td>
+                             <td class="text-center">${dato.Carrera}</td>
                              <td class="text-center">${dato.Semestre}</td>
                              <td class="text-center"><button type="button" class="btn btn-danger btn-eliminar" data-materia-id="${dato.id}" data-bs-toggle="modal" data-bs-target="#eliminarmodal"><i class="bi bi-trash-fill"></i></button></td>
                              </tr>`;
@@ -250,7 +262,7 @@ mostrarTabla = async () => {
         } else if (data.message === "No hay datos") {
             let opciones = ``;
             opciones += `<tr>
-                             </tr>`;
+                             Sin Materias</tr>`;
             tablebody.innerHTML = opciones
         } else {
             alert("No hay datos")
@@ -262,19 +274,19 @@ mostrarTabla = async () => {
 
 mostrarTablaEventos = async () => {
     try {
-        const response = await fetch("tabla_eventos/",{
+        const response = await fetch("tabla_eventos/", {
             method: 'GET',
             headers: {
                 'Authorization': 'Bearer my_secret_token'
             }
         });
-        const datas = await response.json();
-        console.log(datas);
+        const data = await response.json();
+        console.log(data);
 
-        if (datas.message === "Success") {
+        if (data.message === "Success") {
 
             let opciones = ``;
-            datas.datos.forEach((dato) => {
+            data.datos.forEach((dato) => {
                 opciones += `<tr>
                              <td class="campo-evento">${dato.Evento}</td>
                              <td class="text-center">${dato.Fecha_actividad}</td>
@@ -312,13 +324,13 @@ mostrarTablaEventos = async () => {
                 });
             });
 
-        } else if (data.message === "No hay datos") {
+        } else if (data.message === "No encontraron datos de Evento") {
             let opciones = ``;
             opciones += `<tr>
-                             </tr>`;
+                             Sin Eventos</tr>`;
             tableeventos.innerHTML = opciones
         } else {
-            //alert("No hay datos")
+            alert("No hay datos")
         }
     } catch (error) {
         console.log(error);
@@ -326,7 +338,7 @@ mostrarTablaEventos = async () => {
 }
 const obtenerYMostrarDatosEvento = async (eventoidedit) => {
     try {
-        const response = await fetch(`obtener_evento/${eventoidedit}/`,{
+        const response = await fetch(`obtener_evento/${eventoidedit}/`, {
             method: 'GET',
             headers: {
                 'Authorization': 'Bearer my_secret_token'
@@ -357,14 +369,13 @@ const obtenerYMostrarDatosEvento = async (eventoidedit) => {
 const cargaInicial = async () => {
     const idCarreraInicial = 1; // Valor predeterminado para idCarrera
     const semestreInicial = 1; // Valor predeterminado para Semestre
-
+    await listarNotificaciones();
     await listarCarreras();
     await mostrarsemestre();
     await mostrarTabla();
     await listarsalas();
     await listarsalasedit();
     await mostrarTablaEventos();
-    await listarNotificaciones();
 
     await listarMaterias(idCarreraInicial, semestreInicial); // Llamar a listarMaterias con valores iniciales
 
@@ -563,10 +574,20 @@ const cargaInicial = async () => {
                 await mostrarTablaEventos()
                 $('#agregarevento').modal('hide');
                 $('#modaleventos').modal('show');
+                document.getElementById('inputEvento').value = '';
+                document.getElementById('salas').value = '';
+                document.getElementById('datetimefecha').querySelector('input').value = '';
+                document.getElementById('datetimenotificacion').querySelector('input').value = '';
             } else {
                 // Manejo de errores
-                if (responseData.message === 'La fecha de notificación no puede ser posterior a la fecha del evento.') {
+                if (responseData.message) {
                     const toastEl = document.getElementById('liveToast');
+                    const toastBody = toastEl.querySelector('.toast-body');
+
+                    // Actualiza el contenido del toast-body
+                    toastBody.textContent = responseData.message;
+
+                    // Muestra el toast
                     const toast = new bootstrap.Toast(toastEl);
                     toast.show();
                 }
@@ -582,7 +603,7 @@ const cargaInicial = async () => {
         const sala = document.getElementById('salasEditar').value;
         const fechaActividad = document.getElementById('datetimefechaEdit').querySelector('input').value;
         const fechaNotificacion = document.getElementById('datetimenotificacionEdit').querySelector('input').value;
-
+        console.log("fechas:", fechaActividad, fechaNotificacion)
         const fechaActividadDt = new Date(fechaActividad);
         const fechaNotificacionDt = new Date(fechaNotificacion);
 
@@ -619,8 +640,14 @@ const cargaInicial = async () => {
                     $('#modaleventos').modal('show');
 
                 } else {
-                    if (result.message === 'La fecha de notificación no puede ser posterior a la fecha del evento.') {
+                    if (result.message) {
                         const toastEl = document.getElementById('liveToast');
+                        const toastBody = toastEl.querySelector('.toast-body');
+
+                        // Actualiza el contenido del toast-body
+                        toastBody.textContent = result.message;
+
+                        // Muestra el toast
                         const toast = new bootstrap.Toast(toastEl);
                         toast.show();
                     }
@@ -633,60 +660,59 @@ const cargaInicial = async () => {
             alert('Error al actualizar el evento');
         }
     });
-document.getElementById('btnvisto').addEventListener('click', async function() {
-    try {
-        const response = await fetch("notificaciones/", {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer my_secret_token'
+    document.getElementById('btnvisto').addEventListener('click', async function () {
+        try {
+            const response = await fetch("notificaciones/", {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer my_secret_token'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Error en la solicitud de notificaciones');
             }
-        });
 
-        if (!response.ok) {
-            throw new Error('Error en la solicitud de notificaciones');
-        }
+            const data = await response.json();
+            console.log("Datos obtenidos:", data);
 
-        const data = await response.json();
-        console.log("Datos obtenidos:", data);
+            if (data.message === "Not Found") {
+                console.log('Notificaciones no encontradas, proceso abortado.');
+                return;  // Salir de la función si el mensaje es "Not Found"
+            }
+            const promises = data.notificaciones.map(async (notificacion) => {
+                if (notificacion.id) {
+                    const requestData = {id: notificacion.id};
+                    const postResponse = await fetch('marcar_visto/', {
+                        method: 'POST',
+                        body: JSON.stringify(requestData),
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrftoken
+                        }
+                    });
 
-         if (data.message === "Not Found") {
-            console.log('Notificaciones no encontradas, proceso abortado.');
-            return;  // Salir de la función si el mensaje es "Not Found"
-        }
-        const promises = data.notificaciones.map(async (notificacion) => {
-            if (notificacion.id) {
-                const requestData = { id: notificacion.id };
-                const postResponse = await fetch('marcar_visto/', {
-                    method: 'POST',
-                    body: JSON.stringify(requestData),
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrftoken
-                    }
-                });
-
-                if (!postResponse.ok) {
-                    const errorData = await postResponse.json();
-                    console.error('Error en la respuesta:', errorData);
-                    alert('Error en la respuesta del servidor');
-                } else {
-                    const result = await postResponse.json();
-                    if (result.message !== 'Evento marcado como visto correctamente') {
-                        alert(result.message);
+                    if (!postResponse.ok) {
+                        const errorData = await postResponse.json();
+                        console.error('Error en la respuesta:', errorData);
+                        alert('Error en la respuesta del servidor');
+                    } else {
+                        const result = await postResponse.json();
+                        if (result.message !== 'Evento marcado como visto correctamente') {
+                            alert(result.message);
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        await Promise.all(promises);
-        console.log('Todas las notificaciones marcadas como vistas');
-        listarNotificaciones();
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Error al actualizar las notificaciones');
-    }
-});
-
+            await Promise.all(promises);
+            console.log('Todas las notificaciones marcadas como vistas');
+            await listarNotificaciones();
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al actualizar las notificaciones');
+        }
+    });
 
 
 };
@@ -742,9 +768,9 @@ const calculateHoursDifference = (futureDate) => {
         return `${Math.round(diffHours)} horas`;
     } else if (Math.abs(diffMilliseconds) >= oneMinute) {
         const diffMinutes = diffMilliseconds / oneMinute;
-        if(diffMinutes>1){
+        if (diffMinutes > 1) {
             return `${Math.round(diffMinutes)} minutos`;
-        }else{
+        } else {
             return `${Math.round(diffMinutes)} minuto`;
         }
 

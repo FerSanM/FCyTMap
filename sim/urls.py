@@ -3,10 +3,9 @@ from . import views
 
 urlpatterns = [
 
-
-    #path('sign-out', views.sign_out, name='sign_out'),
+    # path('sign-out', views.sign_out, name='sign_out'),
     # path('materias/', views.mostrar_materias, name='mostrar_materias'),
-    #path('auth-receiver', views.auth_receiver, name='auth_receiver'),
+    # path('auth-receiver', views.auth_receiver, name='auth_receiver'),
     path('inicio/guardar_materias/', views.guardar_materias, name='guardar_materias'),
     path('inicio/carreras/', views.get_carreras, name='get_carreras'),
     path('inicio/materias/<int:idcarrera>/<int:semestre>', views.get_materias, name='get_materias'),
@@ -21,6 +20,6 @@ urlpatterns = [
     path('inicio/marcar_visto/', views.marcar_visto, name='marcar_visto'),
     path('inicio/guardar_evento/', views.guardar_evento, name='guardar_evento'),
     path('custom_logout/', views.custom_logout, name='custom_logout'),
-
+    path('404-notfound/', views.not_found, name='not_found'),
 
 ]

@@ -31,12 +31,16 @@ from django.shortcuts import render
 
 GOOGLE_OAUTH_CLIENT_ID = "425881363668-uga1n538hfcmijovqjbu70hnpmne6ij4.apps.googleusercontent.com"
 
+
 def sign_in(request):
     return render(request, 'sign_in.html')
+
 
 def custom_logout(request):
     logout(request)
     return redirect('login')
+
+
 def inicio(request):
     usuario = request.user
     ubicaciones = Sala.objects.all()
@@ -133,6 +137,7 @@ def auth_receiver(request):
     return redirect('sign_in')
 """
 
+
 def login(request):
     return render(request, 'login.html')
 
@@ -157,6 +162,10 @@ def mostrar_materias(request):
 
 def mostrar_materias(request):
     return render(request, 'mostrar_materias')
+
+
+def not_found(request):
+    return render(request, '404_notfound.html')
 
 
 """def mostrar_materias(request):
@@ -225,12 +234,18 @@ def guardar_evento(request):
                 formato_fecha = '%d/%m/%Y %H:%M'
                 fecha_actividad_dt = datetime.datetime.strptime(fecha_actividad, formato_fecha)
                 fecha_notificacion_dt = datetime.datetime.strptime(fecha_notificacion, formato_fecha)
+
+                # Verifica que la fecha de actividad no sea pasada
+                ahora = datetime.datetime.now()
+                if fecha_actividad_dt < ahora:
+                    return JsonResponse({'message': 'La fecha del evento no puede ser anterior a la fecha actual.'})
+
                 if fecha_notificacion_dt > fecha_actividad_dt:
                     return JsonResponse(
                         {'message': 'La fecha de notificación no puede ser posterior a la fecha del evento.'})
 
-                # Convert to aware datetime with timezone information
-                timezone_asuncion = pytz.timezone('America/Asuncion')  # Adjust timezone as needed
+                # Convertir a datetime con zona horaria
+                timezone_asuncion = pytz.timezone('America/Asuncion')
                 fecha_actividad_aware = timezone_asuncion.localize(fecha_actividad_dt)
                 fecha_notificacion_aware = timezone_asuncion.localize(fecha_notificacion_dt)
 
@@ -267,6 +282,8 @@ def eliminar_materias(request):
             except RelacionUsuarioMateria.DoesNotExist:
                 return redirect('mostrar_materias')
 """
+
+
 @csrf_exempt
 def get_carreras(request):
     if request.headers.get('Authorization') != 'Bearer my_secret_token':
@@ -279,6 +296,7 @@ def get_carreras(request):
         data = {'message': "Not Found"}
 
     return JsonResponse(data)
+
 
 @csrf_exempt
 def get_materias(request, idcarrera, semestre):
@@ -327,6 +345,7 @@ def eliminar_evento(request, evento_id):
         # Si ocurre algún otro error, devolver un error genérico
         return JsonResponse({'error': 'Hubo un problema al eliminar el evento'}, status=500)
 
+
 @csrf_exempt
 def get_tabla(request):
     if request.headers.get('Authorization') != 'Bearer my_secret_token':
@@ -342,13 +361,15 @@ def get_tabla(request):
             for relacion in relaciones_usuario_materia:
                 materia_id = relacion.materia_id
                 materia = Materia.objects.filter(id=materia_id).first()
-
+                carrera_id = materia.idCarrera_id
+                carrera = Carrera.objects.filter(id=carrera_id).first()
                 if materia:
                     # Aquí puedes agregar los campos de la tabla Materia que necesites
                     datos.append({
                         'id': relacion.id,
                         'Materia': materia.descripcion,
-                        'Semestre': materia.semestre
+                        'Semestre': materia.semestre,
+                        'Carrera': carrera.descripcion,
                     })
             if datos:
                 return JsonResponse({'message': 'Success', 'datos': datos})
@@ -369,16 +390,18 @@ def get_tablaeventos(request):
         eventos = Actividades.objects.filter(idUsuario_id=id_usuario)
         if eventos:
             datos = []
+            timezone_local = pytz.timezone('America/Asuncion')
             for evento in eventos:
                 sala_id = evento.idSala_id
                 sala = Sala.objects.filter(id=sala_id).first()
 
                 if sala:
+                    fecha_actividad_local = evento.fecha_actividad.astimezone(timezone_local)
                     datos.append({
                         'id': evento.id,
                         'Sala': sala.descripcion,
                         'Evento': evento.descripcion,
-                        'Fecha_actividad': evento.fecha_actividad.strftime('%d/%m/%Y %H:%M'),
+                        'Fecha_actividad': fecha_actividad_local.strftime('%d/%m/%Y %H:%M'),
                     })
             if datos:
                 return JsonResponse({'message': 'Success', 'datos': datos})
@@ -388,7 +411,6 @@ def get_tablaeventos(request):
             return JsonResponse({'message': 'No encontraron datos de Evento'})
     else:
         return JsonResponse({'message': 'Usuario no encontrado'})
-
 
 
 def get_notificaciones(request):
@@ -418,6 +440,7 @@ def get_notificaciones(request):
             data = {'message': "Not Found"}
 
         return JsonResponse(data)
+
 
 @csrf_exempt
 def get_sala(request):
@@ -466,16 +489,18 @@ def obtener_evento(request, evento_id):
         raise Http404("Página no encontrada")
     try:
         evento = get_object_or_404(Actividades, id=evento_id)
-
+        timezone_local = pytz.timezone('America/Asuncion')
         # Preparar los datos del evento para enviar como respuesta JSON
+        fecha_actividad_local = evento.fecha_actividad.astimezone(timezone_local)
+        fecha_notificacion_local = evento.fecha_notificacion.astimezone(timezone_local)
         data = {
             'message': 'Success',
             'evento': {
                 'id': evento.id,
                 'nombre_evento': evento.descripcion,  # Ajusta según el nombre del campo en tu modelo
                 'sala_id': evento.idSala_id,  # Ajusta según el nombre del campo en tu modelo y relación de sala
-                'fecha_actividad': evento.fecha_actividad.strftime('%d/%m/%Y %H:%M'),  # Formato de fecha
-                'fecha_notificacion': evento.fecha_notificacion.strftime('%d/%m/%Y %H:%M'),  # Formato de fecha
+                'fecha_actividad': fecha_actividad_local.strftime('%d/%m/%Y %H:%M'),  # Formato de fecha
+                'fecha_notificacion': fecha_notificacion_local.strftime('%d/%m/%Y %H:%M'),  # Formato de fecha
                 # Agrega más campos según sea necesario
             }
         }
@@ -504,13 +529,22 @@ def editar_evento(request):
                 salas = Sala.objects.get(id=sala_id)
                 fecha_actividad_dta = datetime.datetime.strptime(fecha_actividad, '%d/%m/%Y %H:%M')
                 fecha_notificacion_dta = datetime.datetime.strptime(fecha_notificacion, '%d/%m/%Y %H:%M')
+                print("fechas", fecha_actividad_dta, fecha_notificacion_dta)
+
+                ahora = datetime.datetime.now()
+
+                if fecha_actividad_dta < ahora:
+                    return JsonResponse({'message': 'La fecha del evento no puede ser anterior a la fecha actual.'})
 
                 if fecha_notificacion_dta > fecha_actividad_dta:
                     return JsonResponse(
                         {'message': 'La fecha de notificación no puede ser posterior a la fecha del evento.'})
+
                 timezones = pytz.timezone('America/Asuncion')
+                print(timezones)
                 fecha_actividad_aware = timezones.localize(fecha_actividad_dta)
                 fecha_notificacion_aware = timezones.localize(fecha_notificacion_dta)
+                print(fecha_actividad_aware, fecha_notificacion_aware)
 
                 evento.descripcion = nombre_evento
                 evento.idSala = salas
@@ -551,5 +585,3 @@ def marcar_visto(request):
             return JsonResponse({'message': 'JSON inválido'}, status=400)
     else:
         return JsonResponse({'message': 'Método no permitido'}, status=405)
-
-
