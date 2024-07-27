@@ -111,3 +111,10 @@ class RelacionMateriaSala(models.Model):
     def __str__(self):
         return f"{self.materia} - {self.sala} -{self.dia_semana}: {self.hora_entrada}-{self.hora_salida})"
 
+class Valoracion(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    fecha = models.DateField(auto_now_add=True)
+    descripcion = models.CharField(max_length=150, blank=False)  # Cambiado a CharField con max_length=150 y obligatorio
+    puntuacion = models.IntegerField(blank=False)  # Obligatorio
+
+

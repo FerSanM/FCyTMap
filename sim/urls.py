@@ -19,6 +19,7 @@ urlpatterns = [
     path('inicio/editar_evento/', views.editar_evento, name='editar_evento'),
     path('inicio/marcar_visto/', views.marcar_visto, name='marcar_visto'),
     path('inicio/guardar_evento/', views.guardar_evento, name='guardar_evento'),
+    path('inicio/valorar/', views.valorar, name='valorar'),
     path('custom_logout/', views.custom_logout, name='custom_logout'),
     path('404-notfound/', views.not_found, name='not_found'),
 

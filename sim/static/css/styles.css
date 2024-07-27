@@ -387,3 +387,36 @@ body, html {
 
 
 }
+.rating {
+     display:block;
+    justify-content: center;
+    height: 35px;
+    width: 200px;
+}
+
+.fa-star{
+    cursor:pointer;
+}
+
+
+.clasificacion input[type="radio"] {
+  display: none;
+}
+
+.clasificacion label {
+  color: grey;
+}
+
+.clasificacion {
+  direction: rtl;
+  unicode-bidi: bidi-override;
+}
+
+.clasificacion label:hover,
+.clasificacion label:hover ~ label {
+  color: orange;
+}
+
+.clasificacion input[type="radio"]:checked ~ label {
+  color: orange;
+}

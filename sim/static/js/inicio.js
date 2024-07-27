@@ -495,6 +495,67 @@ const cargaInicial = async () => {
             }
         });
     });
+document.getElementById('btnval').addEventListener('click', async function (event) {
+    event.preventDefault();  // Evita que el formulario se envíe y la página se recargue
+
+    const comentario = document.getElementById('comentario').value;
+    const estrellas = document.querySelectorAll('.clasificacion input[type="radio"]');
+    let valorSeleccionado = 0;
+
+    // Recorre los inputs de radio para encontrar el seleccionado
+    estrellas.forEach((estrella) => {
+        if (estrella.checked) {
+            valorSeleccionado = parseInt(estrella.value, 10);
+        }
+    });
+
+    // Verifica que se ha seleccionado una puntuación
+    if (valorSeleccionado === 0 || comentario.trim() === "") {
+
+
+        const toastEl = document.getElementById('liveToastcamps');
+            const toast = new bootstrap.Toast(toastEl);
+            toast.show();// Desmarca todas las estrellas
+        return;
+    }
+
+    const data = {
+        comentario: comentario,
+        puntuacion: valorSeleccionado
+    };
+
+    try {
+        const response = await fetch('valorar/', {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Hubo un problema al guardar la valoración');
+        }
+
+        const responseData = await response.json();
+        console.log('Valoración Guardada correctamente:', responseData);
+
+        // Mostrar alerta con los datos recibidos en la respuesta
+
+        // Limpiar el comentario después de enviar
+        document.getElementById('comentario').value = '';
+         estrellas.forEach((estrella) => {
+            estrella.checked = false;
+            const toastEl = document.getElementById('liveToastvalor');
+            const toast = new bootstrap.Toast(toastEl);
+            toast.show();// Desmarca todas las estrellas
+        });
+    } catch (error) {
+        console.error('Error al guardar la valoración:', error);
+        alert('Error al guardar la valoración');
+    }
+});
 
     document.getElementById('btn-confirmar-eliminacionevento').addEventListener('click', async () => {
         try {
@@ -759,6 +820,8 @@ function hideErrorMessage() {
     const errorContainer = document.getElementById('error-container');
     errorContainer.style.display = 'none'; // Ocultar el mensaje de error
 }
+
+
 
 window.addEventListener("load", async () => {
     await cargaInicial();

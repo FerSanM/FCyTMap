@@ -4,7 +4,7 @@ import pytz
 from django.db import connection
 from django.views.decorators.http import require_http_methods
 
-from .models import User, Carrera, Actividades
+from .models import User, Carrera, Actividades, Valoracion
 from django.http import HttpResponse, JsonResponse, Http404
 from django.utils import timezone
 from django.shortcuts import redirect
@@ -222,6 +222,48 @@ def guardar_materias(request):
         return JsonResponse({'message': 'Materias guardadas correctamente'})
     else:
         return JsonResponse({'error': 'No se pudo procesar la solicitud'}, status=400)
+
+@csrf_exempt
+def valorar(request):
+    if request.method == 'POST':
+        try:
+            # Cargar los datos JSON del cuerpo de la solicitud
+            data = json.loads(request.body)
+
+            # Obtener los valores del JSON
+            idusuario = request.user.id
+            descripcion = data.get('comentario')
+            puntuacion_str = data.get('puntuacion')
+
+            # Validar y convertir la puntuación a entero
+            try:
+                puntuacion = int(puntuacion_str)
+            except ValueError:
+                return JsonResponse({'error': 'La puntuación debe ser un número entero'}, status=400)
+
+            # Verificar que todos los datos requeridos estén presentes
+            if idusuario and descripcion and puntuacion:
+                # Crear y guardar la valoración
+                calificacion = Valoracion(
+                    usuario_id=idusuario,
+                    descripcion=descripcion,
+                    puntuacion=puntuacion
+                )
+                calificacion.save()
+
+                # Retornar una respuesta de éxito
+                return JsonResponse({'message': 'Success'})
+            else:
+                return JsonResponse({'error': 'Faltan datos necesarios'}, status=400)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Error en el formato del JSON'}, status=400)
+        except Exception as e:
+            # Manejo de cualquier otra excepción
+            return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
+
 
 
 @csrf_exempt
@@ -605,3 +647,6 @@ def marcar_visto(request):
             return JsonResponse({'message': 'JSON inválido'}, status=400)
     else:
         return JsonResponse({'message': 'Método no permitido'}, status=405)
+
+
+   # return JsonResponse({'success': False, 'error': 'Método no permitido'}, status=405)
