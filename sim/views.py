@@ -165,7 +165,7 @@ def mostrar_materias(request):
 
 
 def not_found(request):
-    return render(request, '404_notfound.html')
+    return render(request, '404.html')
 
 
 """def mostrar_materias(request):
@@ -397,11 +397,13 @@ def get_tablaeventos(request):
 
                 if sala:
                     fecha_actividad_local = evento.fecha_actividad.astimezone(timezone_local)
+                    fecha_notificacion_local = evento.fecha_notificacion.astimezone(timezone_local)
                     datos.append({
                         'id': evento.id,
                         'Sala': sala.descripcion,
                         'Evento': evento.descripcion,
                         'Fecha_actividad': fecha_actividad_local.strftime('%d/%m/%Y %H:%M'),
+                        'Fecha_notificacion': evento.fecha_notificacion.astimezone(timezone_local),
                     })
             if datos:
                 return JsonResponse({'message': 'Success', 'datos': datos})

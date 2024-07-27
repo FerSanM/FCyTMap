@@ -97,6 +97,7 @@ const listarNotificaciones = async () => {
                     </li>`;
                 }
             });
+
             if (tieneNotificacionesNoVistas) {
                 alerta = `
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -271,7 +272,7 @@ mostrarTabla = async () => {
         console.log(error);
     }
 }
-
+let eventTimeouts = {};
 mostrarTablaEventos = async () => {
     try {
         const response = await fetch("tabla_eventos/", {
@@ -302,9 +303,40 @@ mostrarTablaEventos = async () => {
                                         class="bi bi-pencil-square"></i></button>
                              </td>
                              </tr>`;
+
+                const now = new Date();
+                const notificationTime = new Date(dato.Fecha_notificacion);
+                const timeUntilNotification = notificationTime - now;
+
+                if (eventTimeouts[dato.id]) {
+                    clearTimeout(eventTimeouts[dato.id]);
+                }
+
+                //console.log("Fecha actual:", now);
+                //console.log("Fecha de notificación:", dato.Fecha_notificacion);
+                //console.log("Fecha de notificación (Date):", notificationTime);
+                //console.log("Tiempo hasta la notificación (ms):", timeUntilNotification);
+
+                if (timeUntilNotification > 0) {
+                    // Programar una actualización en el momento adecuado
+                    eventTimeouts[dato.id] = setTimeout(() => {
+                        const toastEl = document.getElementById('liveToastNotificacion');
+                        const toastBody = toastEl.querySelector('.toast-body');
+
+                        // Actualiza el contenido del toast-body
+                        toastBody.textContent = dato.Evento;
+
+                        // Muestra el toast
+                        const toast = new bootstrap.Toast(toastEl);
+                        toast.show();
+                        listarNotificaciones();
+                    }, timeUntilNotification);
+                }
+                console.log('Temporizadores activos:', eventTimeouts);
             })
 
             tableeventos.innerHTML = opciones
+
 
             const botonesEditarEvento = document.querySelectorAll('.btn-editarevento');
             botonesEditarEvento.forEach(boton => {
