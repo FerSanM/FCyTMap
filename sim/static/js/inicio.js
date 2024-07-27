@@ -88,7 +88,7 @@ const listarNotificaciones = async () => {
                                 </div>
                                 <div class="content-noti">
                                     <span style="font-size: 12px">Notificación de Evento</span><br>
-                                    <span><b>${notificacion.descripcion}</b></span><br>
+                                    <span><b>${notificacion.descripcion}-${notificacion.idSala__descripcion}</b></span><br>
                                     <span style="font-size: 12px">${mensajeDias}</span>
                                      
                                 </div>

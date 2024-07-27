@@ -44,17 +44,23 @@ def custom_logout(request):
 def inicio(request):
     usuario = request.user
     ubicaciones = Sala.objects.all()
-
+    semestres_impar=[1,3,5,7,9]
+    semestres_par = [2, 4, 6, 8, 10]
+    mes_actual = datetime.datetime.now().month
+    if 1 <= mes_actual <= 7:
+        semestreelegido = semestres_impar
+    else:
+        semestreelegido = semestres_par
+    print(semestreelegido)
     if usuario.is_authenticated:
         userdata = SocialAccount.objects.filter(user_id=usuario.id)
     else:
         return redirect('login')
-    # Obtener el día de la semana actual (lunes=0, martes=1, ..., domingo=6)
     dia_actual = datetime.datetime.now().weekday()
     dia_actual = dia_actual + 1
     hora_actual = datetime.datetime.now().time()
     relaciones_sala_materia = RelacionMateriaSala.objects.filter(dia_semana=dia_actual, hora_entrada__lte=hora_actual,
-                                                                 hora_salida__gte=hora_actual)
+                                                                 hora_salida__gte=hora_actual,materia__semestre__in=semestreelegido)
 
     iduser = request.user.id
     materias_seleccionadas = Materia.objects.filter(relacionusuariomateria__usuario__id=iduser)
@@ -417,7 +423,8 @@ def get_tablaeventos(request):
 
 def get_notificaciones(request):
     if request.headers.get('Authorization') != 'Bearer my_secret_token':
-        raise Http404("Página no encontrada")
+        raise Http404
+
     usuario = request.user
     if usuario:
         id_usuario = usuario.id
@@ -430,11 +437,23 @@ def get_notificaciones(request):
         fin_hoy = ahora.replace(hour=23, minute=59, second=59, microsecond=999999)
         print(fin_hoy)
 
-        notificaciones = list(Actividades.objects.filter(
-            idUsuario=id_usuario,
-            fecha_notificacion__lte=ahora,
-
-        ).order_by('-fecha_actividad').values())
+        # Obtener las notificaciones con la información de la sala asociada
+        notificaciones = list(Actividades.objects
+            .select_related('idSala')  # Realiza una unión con la tabla Sala
+            .filter(
+                idUsuario=id_usuario,
+                fecha_notificacion__lte=ahora,
+            )
+            .order_by('-fecha_actividad')
+            .values(
+                'id',
+                'descripcion',
+                'fecha_actividad',
+                'fecha_notificacion',
+                'idSala__id',
+                'idSala__descripcion'
+            )
+        )
 
         if len(notificaciones) > 0:
             data = {'message': "Success", 'notificaciones': notificaciones}
@@ -442,7 +461,6 @@ def get_notificaciones(request):
             data = {'message': "Not Found"}
 
         return JsonResponse(data)
-
 
 @csrf_exempt
 def get_sala(request):

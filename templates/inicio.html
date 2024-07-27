@@ -502,43 +502,95 @@
     }).addTo(map);
 
     document.addEventListener("DOMContentLoaded", function () {
-        var highlightedMarker = null;
+    var highlightedMarker = null;
+    var alertMarker = null; // Variable para almacenar la referencia al marcador de alerta
+    var alertInterval = null; // Variable para almacenar el intervalo de alternancia
 
-        document.getElementById("searchForm").addEventListener("submit", function (event) {
-            event.preventDefault();
+    document.getElementById("searchForm").addEventListener("submit", function (event) {
+        event.preventDefault();
 
-            var searchInput = document.getElementById("searchInput").value.toLowerCase();
-            var matchingMarker = null;
+        var searchInput = document.getElementById("searchInput").value.trim().toLowerCase();
+        var matchingMarker = null;
 
-            // Verificar si map está definido y es una instancia de Leaflet Map
-            if (typeof map !== 'undefined' && map instanceof L.Map) {
-                map.eachLayer(function (layer) {
-                    if (layer instanceof L.Marker && layer.getPopup()) { // Verificar si es un marcador y tiene un popup
-                        var popupContent = layer.getPopup().getContent();
-                        if (popupContent && popupContent.toLowerCase() === (searchInput)) {
+        // Verificar si map está definido y es una instancia de Leaflet Map
+        if (typeof map !== 'undefined' && map instanceof L.Map) {
+            console.log('Map is defined and is an instance of Leaflet Map.');
+            map.eachLayer(function (layer) {
+                if (layer instanceof L.Marker && layer.getPopup()) { // Verificar si es un marcador y tiene un popup
+                    var popupContent = layer.getPopup().getContent();
+                    console.log('Popup content:', popupContent);
+                    if (popupContent) {
+                        // Dividir el contenido del popup en líneas
+                        var lines = popupContent.split('\n');
+
+                        // Comparar solo la primera línea con el searchInput de manera exacta (haciendo la comparación insensible a mayúsculas)
+                        if (lines[0].trim().toLowerCase() === searchInput) {
+                            console.log('Match found:', lines[0]);
                             matchingMarker = layer;
                             return;
                         }
                     }
-                });
+                }
+            });
+        } else {
+            console.error('Map is not defined or is not an instance of Leaflet Map.');
+            return;
+        }
+
+        if (!matchingMarker) {
+            console.log("No matching marker found.");
+            alert("No se encontraron coincidencias en los marcadores.");
+            return;
+        }
+
+        if (highlightedMarker) {
+            console.log('Resetting icon for previously highlighted marker.');
+            highlightedMarker.setIcon(originalIcon);
+        }
+
+       
+        highlightedMarker = matchingMarker;
+
+        // Eliminar el marcador de alerta anterior si existe
+        if (alertMarker) {
+            map.removeLayer(alertMarker);
+            clearInterval(alertInterval); // Detener el intervalo de alternancia
+        }
+
+        // Mostrar el texto de alerta en el centro del marcador coincidente
+        var markerLatLng = matchingMarker.getLatLng();
+        alertMarker = L.marker(markerLatLng, {
+            icon: L.divIcon({
+                className: 'alert-text',
+                html: '<div style="color: red; font-size: 24px; font-weight: bold;">&#10006;</div>', // &#10006; es el carácter Unicode para "X"
+                iconSize: [30, 30] // Ajusta el tamaño según sea necesario
+            })
+        }).addTo(map);
+
+        // Alternar visibilidad de la "X" cada 2 segundos
+        alertInterval = setInterval(function () {
+            if (map.hasLayer(alertMarker)) {
+                map.removeLayer(alertMarker);
             } else {
-                console.error('Map is not defined or is not an instance of Leaflet Map.');
-                return;
+                alertMarker = L.marker(markerLatLng, {
+                    icon: L.divIcon({
+                        className: 'alert-text',
+                        html: '<div style="color: red; font-size: 24px; font-weight: bold;">&#10006;</div>', // &#10006; es el carácter Unicode para "X"
+                        iconSize: [30, 30] 
+                    })
+                }).addTo(map);
             }
-
-            if (!matchingMarker) {
-                alert("No se encontraron coincidencias en los marcadores.");
-                return;
+        }, 1500); // Alternar cada 2 segundos
+          alertTimeout = setTimeout(function () {
+            clearInterval(alertInterval);
+            if (alertMarker) {
+                map.removeLayer(alertMarker); 
             }
-
-            if (highlightedMarker) {
-                highlightedMarker.setIcon(originalIcon);
-            }
-
-            matchingMarker.setIcon(greenIcon);
-            highlightedMarker = matchingMarker;
-        });
+        }, 20000);
+        
+        map.setView(markerLatLng, 20); 
     });
+});
 
 
     var ubicaciones = []; //salas
