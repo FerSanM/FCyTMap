@@ -1,6 +1,7 @@
 import os
 
 import pytz
+from django.contrib.auth.decorators import login_required
 from django.db import connection
 from django.views.decorators.http import require_http_methods
 
@@ -650,3 +651,14 @@ def marcar_visto(request):
 
 
    # return JsonResponse({'success': False, 'error': 'Método no permitido'}, status=405)
+
+
+@login_required
+def eliminar_cuenta(request):
+    try:
+        user = request.user
+        user.delete()
+        logout(request)
+        return HttpResponseRedirect(reverse('login'))
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

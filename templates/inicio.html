@@ -75,6 +75,17 @@
                                 </ul>
 
                             </li>
+                              <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                   aria-expanded="false">
+                                    Ajustes
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                           data-bs-target="#modaldelete">Eliminar Cuenta</a></li>
+                                </ul>
+
+                            </li>
                             <li class="nav-item">
                                 <a id="offsesion" data-bs-toggle="modal" href="#"
                                    data-bs-target="#cerrarsesionmodal" class="nav-link">Cerrar Sesion</a>
@@ -136,6 +147,27 @@
                 <button type="button" class="btn btn-danger btn-cerrarSesion"
                         onclick="location.href='{% url 'custom_logout' %}'">Confirmar
 
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modaldelete" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Borrar Cuenta</h1>
+            </div>
+            <div class="modal-body">
+                ¿Seguro que Deseas Borrar tu Cuenta?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Volver
+                </button>
+                <button type="button" class="btn btn-danger btn-cerrarSesion"
+                        onclick="location.href='{% url 'eliminar_cuenta' %}'">Confirmar
                 </button>
             </div>
         </div>
