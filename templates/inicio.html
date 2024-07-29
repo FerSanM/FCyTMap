@@ -58,6 +58,7 @@
                             <li class="nav-item">
                                 <a class="nav-link" aria-current="page" href="{% url 'inicio' %}">Inicio</a>
                             </li>
+
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                                    aria-expanded="false">
@@ -70,13 +71,11 @@
 
                                     <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
                                            data-bs-target="#modaleventos">Agregar Eventos</a></li>
-                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                           data-bs-target="#modalvalorar">Valoracion</a></li>
 
                                 </ul>
 
                             </li>
-                              <li class="nav-item dropdown">
+                            <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                                    aria-expanded="false">
                                     Ajustes
@@ -87,6 +86,11 @@
                                 </ul>
 
                             </li>
+                            <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal"
+                                                    data-bs-target="#modalvalorar">Valoración</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" data-bs-toggle="modal"
+                                   data-bs-target="#modaltutorial">Acerca de MapaFCyT</a></li>
                             <li class="nav-item">
                                 <a id="offsesion" data-bs-toggle="modal" href="#"
                                    data-bs-target="#cerrarsesionmodal" class="nav-link">Cerrar Sesion</a>
@@ -101,11 +105,11 @@
                     <input id="searchInput" class="form-control" list="suggestions" type="search"
                            placeholder="Buscar en MapaFCyT" aria-label="Search">
                     <datalist id="suggestions">
-    {% for descripcion in ubicaciones_descripciones %}
-        <option value="{{ descripcion }}"></option>
-    {% endfor %}
-</datalist>
-                    <button class="btn" type="submit" id="btn-buscar">
+                        {% for descripcion in ubicaciones_descripciones %}
+                            <option value="{{ descripcion }}"></option>
+                        {% endfor %}
+                    </datalist>
+                    <button class="btn justify-content-end" type="submit" id="btn-buscar">
                         <i class="bi bi-search"></i> <!-- Icono de búsqueda -->
                     </button>
                 </form>
@@ -121,7 +125,7 @@
             </div>
         </a>
 
-        <ul class="dropdown-menu overflow-auto mb-3" id="notif">
+        <ul class="dropdown-menu dropdown-noti overflow-auto mb-3" id="notif">
         </ul>
     </div>
 
@@ -175,24 +179,65 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="modalleyend" data-bs-keyboard="true" tabindex="-1" aria-labelledby="leyendBackdropLabel" aria-hidden="false">
-    <div class="modal-dialog">
+<div class="modal fade" id="modaltutorial" data-bs-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-md">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="leyendModalLabel">Leyenda de Iconos</h1>
+                <h5 class="modal-title" id="exampleModalLabel">Acerca de MapaFCyT</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="d-flex align-items-center mb-3">
-                    <img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png" alt="Orange Icon" style="width: 25px; height: 41px;">
-                    <span class="ms-2">Ubicación con clase</span>
-                </div>
-                <div class="d-flex align-items-center mb-3">
-                    <img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png" alt="Original Icon" style="width: 25px; height: 41px;">
-                    <span class="ms-2">Ubicación</span>
-                </div>
-                <div class="d-flex align-items-center mb-3">
-                    <img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png" alt="Red Icon" style="width: 25px; height: 41px;">
-                    <span class="ms-2">Ubicación con evento</span>
+                <div class="divTutorial d-flex flex-column">
+                    <h4 class="ms-1">Consulta tus dudas</h4>
+                    <div class="opcionesTutorial d-flex">
+                        <table class="table-responsive tablaAcercaDe">
+                            <tbody>
+                            <tr>
+                                <th><a href="#" data-bs-toggle="modal" data-bs-target="#AcercaDeMenuPrincipal"><i
+                                        class="bi bi-map-fill" style="color: #2b2bd1"></i> Interfaz Principal</a>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th><a href="#" data-bs-toggle="modal" data-bs-target="#modalleyend"><i
+                                        class="bi bi-geo-alt"></i> Acerca de los Marcadores</a></th>
+                            </tr>
+                            <tr>
+                                <th><a href="#"><i class="bi bi-journal-arrow-down"></i> Acerca de Actividades</a></th>
+                            </tr>
+                            <tr>
+                                <td><a href="#" data-bs-toggle="modal" data-bs-target="#AcercaDeMaterias"><i
+                                        class="bi bi-journal-plus"></i> Agregar/Quitar
+                                    Materias</a></td>
+                            </tr>
+                            <tr>
+                                <td><a href="#" data-bs-toggle="modal" data-bs-target="#AcercaDeEventos"><i
+                                        class="bi bi-journal-check"></i> Agregar
+                                    Eventos</a></td>
+                            </tr>
+                            <tr>
+                                <th><a href="#"><i class="bi bi-nut-fill" style="color:gray;"></i> Acerca de Ajustes</a>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td><a href="#" data-bs-toggle="modal" data-bs-target="#AcercaDeEliminar"><i
+                                        class="bi bi-person-fill-x" style="color: rgba(255,36,36,0.8);"></i> Eliminar
+                                    Cuenta</a></td>
+                            </tr>
+                            <tr>
+                                <th><a href="#" data-bs-toggle="modal" data-bs-target="#AcercaDeValoracion"><i
+                                        class="bi bi-star-fill" style="color: rgba(255,255,82,0.84)"></i> Acerca de
+                                    Valoración</a></th>
+                            </tr>
+                            <tr>
+                                <th><a href="#" data-bs-toggle="modal" data-bs-target="#AcercaDeDesarrolladores"><i
+                                        class="bi bi-people"></i> Acerca de los Desarrolladores</a></th>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+
                 </div>
             </div>
             <div class="modal-footer">
@@ -201,6 +246,24 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="modalNotis" data-bs-keyboard="true"
+     tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Notificaciones</h1>
+            </div>
+            <div class="body-notis overflow-auto" id="masNoti">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="modalvalorar" data-bs-keyboard="true"
      tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="false">
     <div class="modal-dialog">
@@ -210,28 +273,26 @@
             </div>
             <div class="modal-body">
                 <form id="valoracionForm">
-                    
-                    <div class="rating">
-                        <label for="Valorar" class="sellabel">Valorar:</label>
-                         <p class="clasificacion">
-                             
-
-    <input id="radio1" type="radio" name="estrellas" value="5"><!--
-    --><label for="radio1">★</label><!--
-    --><input id="radio2" type="radio" name="estrellas" value="4"><!--
-    --><label for="radio2">★</label><!--
-    --><input id="radio3" type="radio" name="estrellas" value="3"><!--
-    --><label for="radio3">★</label><!--
-    --><input id="radio4" type="radio" name="estrellas" value="2"><!--
-    --><label for="radio4">★</label><!--
-    --><input id="radio5" type="radio" name="estrellas" value="1"><!--
-    --><label for="radio5">★</label>
-  </p>
+                    <div class="rating d-flex justify-content-start w-75 align-items-center">
+                        <label for="Valorar" class="sellabel ms-0">Valorar:</label>
+                        <p class="clasificacion mb-0">
+                            <input id="radio1" type="radio" name="estrellas" value="5">
+                            <label for="radio1">★</label>
+                            <input id="radio2" type="radio" name="estrellas" value="4">
+                            <label for="radio2">★</label>
+                            <input id="radio3" type="radio" name="estrellas" value="3">
+                            <label for="radio3">★</label>
+                            <input id="radio4" type="radio" name="estrellas" value="2">
+                            <label for="radio4">★</label>
+                            <input id="radio5" type="radio" name="estrellas" value="1">
+                            <label for="radio5">★</label>
+                        </p>
                     </div>
                     <input type="hidden" id="puntuar" name="puntuar" value="">
                     <div class="form-group mt-3">
                         <label for="comentario" class="form-label">Comenta:</label>
-                        <textarea class="form-control" id="comentario" name="comentario" rows="3" maxlength="150"></textarea>
+                        <textarea class="form-control" id="comentario" name="comentario" rows="3"
+                                  maxlength="150"></textarea>
                     </div>
                 </form>
             </div>
@@ -243,27 +304,31 @@
         </div>
     </div>
 </div>
-<div class="modal modal-lg fade" id="modalmaterias" data-bs-keyboard="true"
+<div class="modal modal-lg fade" data-bs-backdrop="static" id="modalmaterias" data-bs-keyboard="true"
      tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="false">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="staticBackdropLabel">
                     Agregar Materias</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form method="get" id="forfiltro">
                     <div class="selmate">
-                        <label for="semestre" class="sellabel">Semestre:</label>
-                        <select class="form-select" name="semestre" id="semestre">
-                        </select>
-                        <label for="carrera" class="sellabel">Carrera:</label>
-                        <select class="form-select" name="carrera" id="carrera"
-                                aria-label="Default select example">
-                        </select>
+                        <div class="d-flex cmbSemestre">
+                            <label for="semestre" class="sellabel">Semestre:</label>
+                            <select class="form-select" name="semestre" id="semestre">
+                            </select>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <label for="carrera" class="sellabel" id="labelCarrera">Carrera:</label>
+                            <select class="form-select" name="carrera" id="carrera"
+                                    aria-label="Default select example">
+                            </select>
+                        </div>
+
                     </div>
+
                 </form>
                 <br>
                 <div class="bordercheck">
@@ -292,7 +357,7 @@
             </div>
             <div class="modal-footer">
                 <div class="container-error"><label id="error-container" class="error-message"></label></div>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar
+                <button type="button" id="reloadButton" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar
                 </button>
                 <button type="submit" class="btn btn-primary" id="btnguar">Agregar</button>
             </div>
@@ -489,7 +554,224 @@
         </div>
     </div>
 </div>
-
+<div class="modal fade" id="AcercaDeMenuPrincipal" data-bs-keyboard="true" tabindex="-1"
+     aria-labelledby="staticBackdropLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Acerca de MapaFCyT</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <section class="carousel-container">
+                    <div class="carousel">
+                        <div class="item active fade">
+                            <img src="{% static 'img/segundocarrusel.jpg' %}" alt="Bienvenido"/>
+                        </div>
+                        <div class="item fade">
+                            <img src="{% static 'img/tercercarrusel.jpg' %}" alt="Interfaz de Mapa"/>
+                        </div>
+                        <div class="item active fade">
+                            <img src="{% static 'img/InterfazPrincipal.jpg' %}" alt="Interfaz Principal"/>
+                        </div>
+                    </div>
+                    <button class="btnCarousel prev">&#10094;</button>
+                    <button class="btnCarousel next">&#10095;</button>
+                    <div class="dots"></div>
+                </section>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-target="#modaltutorial"
+                        data-bs-toggle="modal">Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="AcercaDeValoracion" data-bs-keyboard="true" tabindex="-1"
+     aria-labelledby="staticBackdropLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Acerca de MapaFCyT</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <section class="carousel-container">
+                    <div class="carousel">
+                        <div class="item active fade">
+                            <img src="{% static 'img/intervazValoracion.jpg' %}" alt="Valoracion"/>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-target="#modaltutorial"
+                        data-bs-toggle="modal">Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="AcercaDeEliminar" data-bs-keyboard="true" tabindex="-1"
+     aria-labelledby="staticBackdropLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Acerca de MapaFCyT</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <section class="carousel-container">
+                    <div class="carousel">
+                        <div class="item active fade">
+                            <img src="{% static 'img/borrarcuenta.jpg' %}" alt="Borrar Cuenta"/>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-target="#modaltutorial"
+                        data-bs-toggle="modal">Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="AcercaDeEventos" data-bs-keyboard="true" tabindex="-1"
+     aria-labelledby="staticBackdropLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Acerca de MapaFCyT</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <section class="carousel-container">
+                    <div class="carousel">
+                        <div class="item active fade">
+                            <img src="{% static 'img/interfazE.jpg' %}" alt="Interfaz"/>
+                        </div>
+                        <div class="item fade">
+                            <img src="{% static 'img/agregarE.jpg' %}" alt="Agregar Evento"/>
+                        </div>
+                        <div class="item fade">
+                            <img src="{% static 'img/modificarE.jpg' %}" alt="Modificar Evento"/>
+                        </div>
+                        <div class="item fade">
+                            <img src="{% static 'img/eliminarE.jpg' %}" alt="Eliminar Evento"/>
+                        </div>
+                    </div>
+                    <button class="btnCarousel prev">&#10094;</button>
+                    <button class="btnCarousel next">&#10095;</button>
+                    <div class="dots"></div>
+                </section>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-target="#modaltutorial"
+                        data-bs-toggle="modal">Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="AcercaDeDesarrolladores" data-bs-keyboard="true" tabindex="-1"
+     aria-labelledby="staticBackdropLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Acerca de MapaFCyT</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <section class="carousel-container">
+                    <div class="carousel">
+                        <div class="item active fade">
+                            <img src="{% static 'img/primercarrusel.jpg' %}" alt="Desarrolladores de MapaFCyT"/>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-target="#modaltutorial"
+                        data-bs-toggle="modal">Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="AcercaDeMaterias" data-bs-keyboard="true" tabindex="-1"
+     aria-labelledby="staticBackdropLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Acerca de MapaFCyT</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <section class="carousel-container">
+                    <div class="carousel">
+                        <div class="item active fade">
+                            <img src="{% static 'img/interfazM.jpg' %}" alt="Interfaz Materia"/>
+                        </div>
+                        <div class="item fade">
+                            <img src="{% static 'img/agregarM.jpg' %}" alt="Agregar Materia"/>
+                        </div>
+                        <div class="item fade">
+                            <img src="{% static 'img/eliminarM.jpg' %}" alt="Eliminar Materia"/>
+                        </div>
+                    </div>
+                    <button class="btnCarousel prev">&#10094;</button>
+                    <button class="btnCarousel next">&#10095;</button>
+                    <div class="dots"></div>
+                </section>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-target="#modaltutorial"
+                        data-bs-toggle="modal">Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modalleyend" data-bs-keyboard="true" tabindex="-1" aria-labelledby="leyendBackdropLabel"
+     aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="leyendModalLabel">Leyenda de Iconos</h1>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex align-items-center mb-3">
+                    <img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png"
+                         alt="Orange Icon" style="width: 25px; height: 41px;">
+                    <span class="ms-2">Ubicación de tus Materias Agregadas</span>
+                </div>
+                <div class="d-flex align-items-center mb-3">
+                    <img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png"
+                         alt="Original Icon" style="width: 25px; height: 41px;">
+                    <span class="ms-2">Ubicación de Clases normales</span>
+                </div>
+                <div class="d-flex align-items-center mb-3">
+                    <img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png"
+                         alt="Red Icon" style="width: 25px; height: 41px;">
+                    <span class="ms-2">Ubicación de Eventos Agregados</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-target="#modaltutorial"
+                        data-bs-toggle="modal">Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
     <div id="liveToast" class="toast text-bg-danger" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header text-bg-danger">
@@ -537,7 +819,18 @@
         crossorigin="anonymous"></script>
 <script src="{% static 'js/inicio.js' %}"></script>
 <script src="{% static 'js/scroll.js' %}"></script>
+<script src="{% static 'js/carousel.js' %}"></script>
 <div id="map"></div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let reloadButton = document.getElementById("reloadButton");
+        if (reloadButton) {
+            reloadButton.addEventListener("click", function () {
+                location.reload(); // Recarga la página
+            });
+        }
+    });
+</script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var config = {
@@ -628,108 +921,108 @@
         maxZoom: 21,
         minZoom: 18,
     }).addTo(map);
-       var textIcon = L.divIcon({
+    var textIcon = L.divIcon({
         className: 'text-icon', // Clases CSS opcionales para estilos adicionales
         html: '<div style="font-size: 16px; color: black; background-color: transparent; padding: 5px; border-radius: 3px;">Entrada</div>',
         iconSize: [80, 40], // Ajusta el tamaño del icono según el texto
         iconAnchor: [40, 20] // Ajusta el anclaje del icono para centrar el texto
     });
-      L.marker([-25.45334, -56.44293], {icon: textIcon}).addTo(map)
+    L.marker([-25.45334, -56.44293], {icon: textIcon}).addTo(map)
     document.addEventListener("DOMContentLoaded", function () {
-    var highlightedMarker = null;
-    var alertMarker = null; // Variable para almacenar la referencia al marcador de alerta
-    var alertInterval = null; // Variable para almacenar el intervalo de alternancia
+        var highlightedMarker = null;
+        var alertMarker = null; // Variable para almacenar la referencia al marcador de alerta
+        var alertInterval = null; // Variable para almacenar el intervalo de alternancia
 
-    document.getElementById("searchForm").addEventListener("submit", function (event) {
-        event.preventDefault();
+        document.getElementById("searchForm").addEventListener("submit", function (event) {
+            event.preventDefault();
 
-        var searchInput = document.getElementById("searchInput").value.trim().toLowerCase();
-        var matchingMarker = null;
+            var searchInput = document.getElementById("searchInput").value.trim().toLowerCase();
+            var matchingMarker = null;
 
-        // Verificar si map está definido y es una instancia de Leaflet Map
-        if (typeof map !== 'undefined' && map instanceof L.Map) {
-            console.log('Map is defined and is an instance of Leaflet Map.');
-            map.eachLayer(function (layer) {
-                if (layer instanceof L.Marker && layer.getPopup()) { // Verificar si es un marcador y tiene un popup
-                    var popupContent = layer.getPopup().getContent();
-                    console.log('Popup content:', popupContent);
-                    if (popupContent) {
-                        // Dividir el contenido del popup en líneas
-                        var lines = popupContent.split('\n');
+            // Verificar si map está definido y es una instancia de Leaflet Map
+            if (typeof map !== 'undefined' && map instanceof L.Map) {
+                console.log('Map is defined and is an instance of Leaflet Map.');
+                map.eachLayer(function (layer) {
+                    if (layer instanceof L.Marker && layer.getPopup()) { // Verificar si es un marcador y tiene un popup
+                        var popupContent = layer.getPopup().getContent();
+                        console.log('Popup content:', popupContent);
+                        if (popupContent) {
+                            // Dividir el contenido del popup en líneas
+                            var lines = popupContent.split('\n');
 
-                        // Extraer la primera línea y tomar la parte antes del guion
-                        var firstLine = lines[0].trim().toLowerCase();
-                        var descriptionBeforeDash = firstLine.split('-')[0].trim();
+                            // Extraer la primera línea y tomar la parte antes del guion
+                            var firstLine = lines[0].trim().toLowerCase();
+                            var descriptionBeforeDash = firstLine.split('-')[0].trim();
 
-                        // Comparar con el searchInput de manera exacta
-                        if (descriptionBeforeDash === searchInput) {
-                            console.log('Match found:', descriptionBeforeDash);
-                            matchingMarker = layer;
-                            return;
+                            // Comparar con el searchInput de manera exacta
+                            if (descriptionBeforeDash === searchInput) {
+                                console.log('Match found:', descriptionBeforeDash);
+                                matchingMarker = layer;
+                                return;
+                            }
                         }
                     }
-                }
-            });
-        } else {
-            console.error('Map is not defined or is not an instance of Leaflet Map.');
-            return;
-        }
-
-        if (!matchingMarker) {
-            console.log("No matching marker found.");
-            alert("No se encontraron coincidencias en los marcadores.");
-            return;
-        }
-
-        if (highlightedMarker) {
-            console.log('Resetting icon for previously highlighted marker.');
-            highlightedMarker.setIcon(originalIcon);
-        }
-
-        highlightedMarker = matchingMarker;
-
-        // Eliminar el marcador de alerta anterior si existe
-        if (alertMarker) {
-            map.removeLayer(alertMarker);
-            clearInterval(alertInterval); // Detener el intervalo de alternancia
-        }
-
-        // Mostrar el texto de alerta en el centro del marcador coincidente
-        var markerLatLng = matchingMarker.getLatLng();
-        alertMarker = L.marker(markerLatLng, {
-            icon: L.divIcon({
-                className: 'alert-text',
-                html: '<div style="color: red; font-size: 24px; font-weight: bold;">&#10006;</div>', // &#10006; es el carácter Unicode para "X"
-                iconSize: [30, 30] // Ajusta el tamaño según sea necesario
-            })
-        }).addTo(map);
-
-        // Alternar visibilidad de la "X" cada 1.5 segundos
-        alertInterval = setInterval(function () {
-            if (map.hasLayer(alertMarker)) {
-                map.removeLayer(alertMarker);
+                });
             } else {
-                alertMarker = L.marker(markerLatLng, {
-                    icon: L.divIcon({
-                        className: 'alert-text',
-                        html: '<div style="color: red; font-size: 24px; font-weight: bold;">&#10006;</div>', // &#10006; es el carácter Unicode para "X"
-                        iconSize: [30, 30]
-                    })
-                }).addTo(map);
+                console.error('Map is not defined or is not an instance of Leaflet Map.');
+                return;
             }
-        }, 1500); // Alternar cada 1.5 segundos
 
-        // Detener el parpadeo después de 20 segundos
-        alertTimeout = setTimeout(function () {
-            clearInterval(alertInterval);
+            if (!matchingMarker) {
+                console.log("No matching marker found.");
+                alert("No se encontraron coincidencias en los marcadores.");
+                return;
+            }
+
+            if (highlightedMarker) {
+                console.log('Resetting icon for previously highlighted marker.');
+                highlightedMarker.setIcon(originalIcon);
+            }
+
+            highlightedMarker = matchingMarker;
+
+            // Eliminar el marcador de alerta anterior si existe
             if (alertMarker) {
                 map.removeLayer(alertMarker);
+                clearInterval(alertInterval); // Detener el intervalo de alternancia
             }
-        }, 20000);
 
-        map.setView(markerLatLng, 20);
+            // Mostrar el texto de alerta en el centro del marcador coincidente
+            var markerLatLng = matchingMarker.getLatLng();
+            alertMarker = L.marker(markerLatLng, {
+                icon: L.divIcon({
+                    className: 'alert-text',
+                    html: '<div style="color: red; font-size: 24px; font-weight: bold;">&#10006;</div>', // &#10006; es el carácter Unicode para "X"
+                    iconSize: [30, 30] // Ajusta el tamaño según sea necesario
+                })
+            }).addTo(map);
+
+            // Alternar visibilidad de la "X" cada 1.5 segundos
+            alertInterval = setInterval(function () {
+                if (map.hasLayer(alertMarker)) {
+                    map.removeLayer(alertMarker);
+                } else {
+                    alertMarker = L.marker(markerLatLng, {
+                        icon: L.divIcon({
+                            className: 'alert-text',
+                            html: '<div style="color: red; font-size: 24px; font-weight: bold;">&#10006;</div>', // &#10006; es el carácter Unicode para "X"
+                            iconSize: [30, 30]
+                        })
+                    }).addTo(map);
+                }
+            }, 1500); // Alternar cada 1.5 segundos
+
+            // Detener el parpadeo después de 20 segundos
+            alertTimeout = setTimeout(function () {
+                clearInterval(alertInterval);
+                if (alertMarker) {
+                    map.removeLayer(alertMarker);
+                }
+            }, 20000);
+
+            map.setView(markerLatLng, 20);
+        });
     });
-});
 
 
     var ubicaciones = []; //salas
@@ -746,7 +1039,7 @@
     {% for ubicacion in ubicaciones %}
         L.marker([{{ ubicacion.latitud }}, {{ ubicacion.longitud }}]).addTo(map)
             .bindPopup("{{ ubicacion.descripcion }}");
-        ubicaciones.push([{{ ubicacion.latitud }}, {{ ubicacion.longitud }}, "{{ ubicacion.descripcion }}", {{ ubicacion.id }} ]);
+        ubicaciones.push([{{ ubicacion.latitud }}, {{ ubicacion.longitud }}, "{{ ubicacion.descripcion }}", {{ ubicacion.id }}]);
     {% endfor %}
     {% for evento in eventos %}
         eventos.push(["{{ evento.descripcion }}", {{evento.idSala.id }}])
@@ -769,7 +1062,6 @@
         }
         return false; // No hay coincidencia
     }
-
 
 
     function obtenerDescripcionEventosPorSala(idSala) {
@@ -840,9 +1132,9 @@
             marker.bindPopup(currentPopupContent);
 
             // Cambiar el ícono del marcador si no es orangeIcon
-            
-                marker.setIcon(redIcon);
-            
+
+            marker.setIcon(redIcon);
+
         }
     });
 
@@ -901,7 +1193,6 @@
     } else {
         alert("Geolocation is not supported by this browser.");
     }
-
 
 
 </script>

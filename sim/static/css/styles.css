@@ -71,7 +71,7 @@ body, html {
 .container-fluid {
     display: flex;
     background-color: white;
-    width: 358px;
+    width: auto;
     margin-left: 20px;
     border-radius: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -134,14 +134,6 @@ body, html {
 
 .row {
     padding-left: 0px;
-}
-
-#carrera {
-    width: 35%;
-}
-
-#semestre {
-    width: 20%;
 }
 
 #btnfil {
@@ -353,14 +345,186 @@ body, html {
     align-items: center;
 }
 
+.clasificacion {
+    font-size: 30px;
+}
+
+#comentario {
+    border: 1px solid gray !important;
+    padding-left: 12px;
+    max-height: 200px;
+    width: 100% !important;
+}
+
+#notisModal {
+    padding: 10px 20px 10px 20px;
+    border-bottom: 1px solid #c5c5c5;
+    max-width: 500px;
+    max-height: 650px;
+}
+
+#notisModal:hover {
+    background: #f4f4f4;
+
+}
+
+.clasificacion label {
+    cursor: pointer;
+}
+
+.carousel-container {
+    width: 100%;
+    margin: auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--lx-gap);
+}
+
+.carousel {
+    aspect-ratio: 16/9;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.item {
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.item.active {
+    opacity: 1;
+    display: block;
+}
+
+.item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.caption {
+    width: 100%;
+    padding: var(--lx-space-01);
+    position: absolute;
+    bottom: 0;
+    text-transform: uppercase;
+    text-align: center;
+    font-size: 12px;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.btnCarousel {
+    position: absolute;
+    transform: translateY(-50%);
+    top: 50%;
+    outline: none;
+    border: none;
+    padding: 20px 30px 20px 30px;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 900;
+    color: rgba(16, 16, 14, 0.63);
+    background-color: #ffffe6;
+    transition: transform 0.2s ease-in-out;
+}
+
+.btnCarousel.prev {
+    left: -5%;
+    background: transparent;
+    font-size: 20px;
+}
+
+.btnCarousel.next {
+    background: transparent;
+    right: -5%;
+    font-size: 20px;
+}
+
+.btnCarousel:active,
+.btnCarousel:focus {
+    transform: translateY(-50%) scale(0.9);
+}
+
+.btnCarousel:hover {
+    transform: translateY(-50%) scale(0.96);
+    color: dodgerblue;
+}
+
+.dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.dot {
+    cursor: pointer;
+    height: 10px;
+    width: 10px;
+    background-color: #242421;
+    transition: background-color 0.2s ease;
+}
+
+.dot.active,
+.dot:hover {
+    background-color: dodgerblue;
+}
+
+.opcionesTutorial {
+    border: 1px solid gray;
+    border-radius: 20px;
+    width: 100%;
+    padding: 20px 20px;
+}
+
+.tablaAcercaDe a {
+    text-decoration: none;
+    color: black;
+}
+
+.tablaAcercaDe tr:hover a {
+    color: dodgerblue;
+}
+
+.tablaAcercaDe tr {
+    height: 30px;
+}
+
+.tablaAcercaDe tr td {
+    padding-left: 10px;
+}
+
+.tablaAcercaDe {
+    width: 100%;
+}
+
 /* RESPONSIVE EN TELEFONOS*/
 @media (max-width: 576px) {
     .container-fluid {
-        width: 75% !important;
+        width: 55%;
+    }
+
+    .dropdown-noti {
+        top: 100% !important;
+        right: 0 !important;
+        left: auto !important;
+        transform: translateX(13%);
+    }
+
+    #imguser {
+        width: 30px;
+        height: 30px;
     }
 
     .row {
-        width: 100%;
+        width: auto;
     }
 
     .col {
@@ -385,38 +549,86 @@ body, html {
         padding-right: 0;
     }
 
+    #btnmate {
+        font-size: 10px;
+    }
+
+    .selmate {
+        flex-direction: column;
+    }
+
+    .cmbSemestre {
+        margin-bottom: 10px;
+    }
+
+    #labelCarrera {
+        margin-right: 28px;
+    }
+
+    .table-responsive {
+        overflow: auto;
+        font-size: 12px;
+        padding: 0 10px 0 10px;
+    }
+
+    .container-agregar {
+        flex-direction: column;
+    }
+
+    .input-group {
+        flex-wrap: unset;
+    }
+
+    .tempus-dominus-widget {
+        font-size: 12px;
+    }
+
+    .tempus-dominus-widget .date-container-days {
+        grid-auto-rows: 35px;
+    }
+
+    .opcionesTutorial {
+        padding: 20px 20px;
+    }
+
+    .div-login {
+        margin-left: 5%;
+        margin-right: 5%;
+        text-align: center;
+    }
 
 }
+
 .rating {
-     display:block;
+    display: block;
     justify-content: center;
     height: 35px;
     width: 200px;
 }
 
-.fa-star{
-    cursor:pointer;
+.fa-star {
+    cursor: pointer;
 }
 
 
 .clasificacion input[type="radio"] {
-  display: none;
+    display: none;
 }
 
 .clasificacion label {
-  color: grey;
+    color: grey;
 }
 
 .clasificacion {
-  direction: rtl;
-  unicode-bidi: bidi-override;
+    direction: rtl;
+    unicode-bidi: bidi-override;
 }
 
 .clasificacion label:hover,
 .clasificacion label:hover ~ label {
-  color: orange;
+    color: orange;
 }
 
 .clasificacion input[type="radio"]:checked ~ label {
-  color: orange;
+    color: orange;
 }
