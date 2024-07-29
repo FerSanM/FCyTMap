@@ -62,7 +62,7 @@ def inicio(request):
         return redirect('login')
 
     dia_actual = datetime.datetime.now().weekday()
-    dia_actual = 2  # Ajustando el día a la base de datos
+    dia_actual = dia_actual + 1  # Ajustando el día a la base de datos
     hora_actual = datetime.datetime.now().time()
 
     relaciones_sala_materia = RelacionMateriaSala.objects.filter(
