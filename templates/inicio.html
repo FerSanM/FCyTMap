@@ -72,6 +72,7 @@
                                            data-bs-target="#modaleventos">Agregar Eventos</a></li>
                                     <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
                                            data-bs-target="#modalvalorar">Valoracion</a></li>
+
                                 </ul>
 
                             </li>
@@ -100,10 +101,10 @@
                     <input id="searchInput" class="form-control" list="suggestions" type="search"
                            placeholder="Buscar en MapaFCyT" aria-label="Search">
                     <datalist id="suggestions">
-                        {% for ubicacion in ubicaciones %}
-                            <option value="{{ ubicacion.descripcion }}"></option>
-                        {% endfor %}
-                    </datalist>
+    {% for descripcion in ubicaciones_descripciones %}
+        <option value="{{ descripcion }}"></option>
+    {% endfor %}
+</datalist>
                     <button class="btn" type="submit" id="btn-buscar">
                         <i class="bi bi-search"></i> <!-- Icono de búsqueda -->
                     </button>
@@ -123,6 +124,7 @@
         <ul class="dropdown-menu overflow-auto mb-3" id="notif">
         </ul>
     </div>
+
     {% for userdatas in userdata %}
         <div>
             <img id="imguser" src="{{ userdatas.extra_data.picture }}" alt="User Picture">
@@ -169,6 +171,32 @@
                 <button type="button" class="btn btn-danger btn-cerrarSesion"
                         onclick="location.href='{% url 'eliminar_cuenta' %}'">Confirmar
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modalleyend" data-bs-keyboard="true" tabindex="-1" aria-labelledby="leyendBackdropLabel" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="leyendModalLabel">Leyenda de Iconos</h1>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex align-items-center mb-3">
+                    <img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png" alt="Orange Icon" style="width: 25px; height: 41px;">
+                    <span class="ms-2">Ubicación con clase</span>
+                </div>
+                <div class="d-flex align-items-center mb-3">
+                    <img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png" alt="Original Icon" style="width: 25px; height: 41px;">
+                    <span class="ms-2">Ubicación</span>
+                </div>
+                <div class="d-flex align-items-center mb-3">
+                    <img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png" alt="Red Icon" style="width: 25px; height: 41px;">
+                    <span class="ms-2">Ubicación con evento</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
@@ -600,7 +628,13 @@
         maxZoom: 21,
         minZoom: 18,
     }).addTo(map);
-
+       var textIcon = L.divIcon({
+        className: 'text-icon', // Clases CSS opcionales para estilos adicionales
+        html: '<div style="font-size: 16px; color: black; background-color: transparent; padding: 5px; border-radius: 3px;">Entrada</div>',
+        iconSize: [80, 40], // Ajusta el tamaño del icono según el texto
+        iconAnchor: [40, 20] // Ajusta el anclaje del icono para centrar el texto
+    });
+      L.marker([-25.45334, -56.44293], {icon: textIcon}).addTo(map)
     document.addEventListener("DOMContentLoaded", function () {
     var highlightedMarker = null;
     var alertMarker = null; // Variable para almacenar la referencia al marcador de alerta
@@ -623,9 +657,13 @@
                         // Dividir el contenido del popup en líneas
                         var lines = popupContent.split('\n');
 
-                        // Comparar solo la primera línea con el searchInput de manera exacta (haciendo la comparación insensible a mayúsculas)
-                        if (lines[0].trim().toLowerCase() === searchInput) {
-                            console.log('Match found:', lines[0]);
+                        // Extraer la primera línea y tomar la parte antes del guion
+                        var firstLine = lines[0].trim().toLowerCase();
+                        var descriptionBeforeDash = firstLine.split('-')[0].trim();
+
+                        // Comparar con el searchInput de manera exacta
+                        if (descriptionBeforeDash === searchInput) {
+                            console.log('Match found:', descriptionBeforeDash);
                             matchingMarker = layer;
                             return;
                         }
@@ -648,7 +686,6 @@
             highlightedMarker.setIcon(originalIcon);
         }
 
-
         highlightedMarker = matchingMarker;
 
         // Eliminar el marcador de alerta anterior si existe
@@ -667,7 +704,7 @@
             })
         }).addTo(map);
 
-        // Alternar visibilidad de la "X" cada 2 segundos
+        // Alternar visibilidad de la "X" cada 1.5 segundos
         alertInterval = setInterval(function () {
             if (map.hasLayer(alertMarker)) {
                 map.removeLayer(alertMarker);
@@ -680,8 +717,10 @@
                     })
                 }).addTo(map);
             }
-        }, 1500); // Alternar cada 2 segundos
-          alertTimeout = setTimeout(function () {
+        }, 1500); // Alternar cada 1.5 segundos
+
+        // Detener el parpadeo después de 20 segundos
+        alertTimeout = setTimeout(function () {
             clearInterval(alertInterval);
             if (alertMarker) {
                 map.removeLayer(alertMarker);
@@ -707,7 +746,7 @@
     {% for ubicacion in ubicaciones %}
         L.marker([{{ ubicacion.latitud }}, {{ ubicacion.longitud }}]).addTo(map)
             .bindPopup("{{ ubicacion.descripcion }}");
-        ubicaciones.push([{{ ubicacion.latitud }}, {{ ubicacion.longitud }}, "{{ ubicacion.descripcion }}", {{ ubicacion.id }}]);
+        ubicaciones.push([{{ ubicacion.latitud }}, {{ ubicacion.longitud }}, "{{ ubicacion.descripcion }}", {{ ubicacion.id }} ]);
     {% endfor %}
     {% for evento in eventos %}
         eventos.push(["{{ evento.descripcion }}", {{evento.idSala.id }}])
@@ -732,8 +771,7 @@
     }
 
 
-    // Modifica la función para devolver la descripción del evento si existe una coincidencia
-    // Modifica la función para devolver una lista de descripciones de eventos si existe una coincidencia
+
     function obtenerDescripcionEventosPorSala(idSala) {
         // Filtrar los eventos que coinciden con el idSala
         var eventosCoincidentes = eventos.filter(function (evento) {
@@ -802,9 +840,9 @@
             marker.bindPopup(currentPopupContent);
 
             // Cambiar el ícono del marcador si no es orangeIcon
-            if (marker.options.icon !== orangeIcon) {
+            
                 marker.setIcon(redIcon);
-            }
+            
         }
     });
 

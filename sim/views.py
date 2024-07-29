@@ -45,30 +45,39 @@ def custom_logout(request):
 def inicio(request):
     usuario = request.user
     ubicaciones = Sala.objects.all()
-    semestres_impar=[1,3,5,7,9]
+    ubicaciones_descripciones = Sala.objects.values_list('descripcion', flat=True)
+    semestres_impar = [1, 3, 5, 7, 9]
     semestres_par = [2, 4, 6, 8, 10]
     mes_actual = datetime.datetime.now().month
+
     if 1 <= mes_actual <= 7:
         semestreelegido = semestres_impar
     else:
         semestreelegido = semestres_par
     print(semestreelegido)
+
     if usuario.is_authenticated:
         userdata = SocialAccount.objects.filter(user_id=usuario.id)
     else:
         return redirect('login')
+
     dia_actual = datetime.datetime.now().weekday()
-    dia_actual = dia_actual + 1
+    dia_actual = 2  # Ajustando el día a la base de datos
     hora_actual = datetime.datetime.now().time()
-    relaciones_sala_materia = RelacionMateriaSala.objects.filter(dia_semana=dia_actual, hora_entrada__lte=hora_actual,
-                                                                 hora_salida__gte=hora_actual,materia__semestre__in=semestreelegido)
+
+    relaciones_sala_materia = RelacionMateriaSala.objects.filter(
+        dia_semana=dia_actual,
+        hora_entrada__lte=hora_actual,
+        hora_salida__gte=hora_actual,
+        materia__semestre__in=semestreelegido
+    )
 
     iduser = request.user.id
+    # Materias del usuario
     materias_seleccionadas = Materia.objects.filter(relacionusuariomateria__usuario__id=iduser)
-    actividades_usuario = Actividades.objects.filter()
-    # Consulta utilizando el ORM de Django
+    # Lista de ids de Materias
     ids_materias_relacionadas = [relacion.materia_id for relacion in relaciones_sala_materia]
-    # print("Los ID de materia",ids_materias_relacionadas)
+    # Materias del usuario en clase actualmente
     materias_filtradas = materias_seleccionadas.filter(id__in=ids_materias_relacionadas)
 
     ahora = timezone.localtime(timezone.now())
@@ -78,30 +87,40 @@ def inicio(request):
     eventos = Actividades.objects.filter(
         idUsuario=iduser,
         fecha_actividad__lte=ahora,
-        fecha_actividad__range=(inicio_hoy, fin_hoy))
+        fecha_actividad__range=(inicio_hoy, fin_hoy)
+    )
+
+    # Ajustar descripciones de ubicaciones
+    for ubicacion in ubicaciones:
+        if ubicacion.idPlanta.descripcion != "planta baja":
+            ubicacion.descripcion = f"{ubicacion.descripcion}-{ubicacion.idPlanta.descripcion}"
 
     return render(request, 'inicio.html', {
         'ubicaciones': ubicaciones,
         'relaciones': relaciones_sala_materia,
         'materias_usuario': materias_filtradas,
         'userdata': userdata,
-        'eventos': eventos
+        'eventos': eventos,
+        'ubicaciones_descripciones': ubicaciones_descripciones,
     })
 
 
 def iniciosin(request):
     ubicaciones = Sala.objects.all()
-
-    # Obtener el día de la semana actual (lunes=0, martes=1, ..., domingo=6)
+    ubicaciones_descripciones = Sala.objects.values_list('descripcion', flat=True)
+    # Obtener el día de la semana actual
     dia_actual = datetime.datetime.now().weekday()
     dia_actual = dia_actual + 1
     hora_actual = datetime.datetime.now().time()
     relaciones_sala_materia = RelacionMateriaSala.objects.filter(dia_semana=dia_actual, hora_entrada__lte=hora_actual,
                                                                  hora_salida__gte=hora_actual)
-
+    for ubicacion in ubicaciones:
+        if ubicacion.idPlanta.descripcion != "planta baja":
+            ubicacion.descripcion = f"{ubicacion.descripcion}-{ubicacion.idPlanta.descripcion}"
     return render(request, 'iniciosin.html', {
         'ubicaciones': ubicaciones,
         'relaciones': relaciones_sala_materia,
+        'ubicaciones_descripciones': ubicaciones_descripciones,
     })
 
 
@@ -208,7 +227,7 @@ from django.urls import reverse
 @csrf_exempt
 def guardar_materias(request):
     iduser = request.user.id
-    print("Usuari")
+    #print("Usuari")
     if request.method == 'POST':
         data = json.loads(request.body)
         materias_seleccionadas = data.get('materia_id', [])
@@ -219,7 +238,7 @@ def guardar_materias(request):
         for materia_id in materias_seleccionadas:
             relacion = RelacionUsuarioMateria(usuario_id=iduser, materia_id=materia_id)
             relacion.save()
-            print("jjajajajajajajajajajajja")
+            #print("jjajajajajajajajajajajja")
         return JsonResponse({'message': 'Materias guardadas correctamente'})
     else:
         return JsonResponse({'error': 'No se pudo procesar la solicitud'}, status=400)
@@ -228,10 +247,7 @@ def guardar_materias(request):
 def valorar(request):
     if request.method == 'POST':
         try:
-            # Cargar los datos JSON del cuerpo de la solicitud
             data = json.loads(request.body)
-
-            # Obtener los valores del JSON
             idusuario = request.user.id
             descripcion = data.get('comentario')
             puntuacion_str = data.get('puntuacion')
@@ -260,7 +276,6 @@ def valorar(request):
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Error en el formato del JSON'}, status=400)
         except Exception as e:
-            # Manejo de cualquier otra excepción
             return JsonResponse({'error': str(e)}, status=500)
 
     return JsonResponse({'error': 'Método no permitido'}, status=405)

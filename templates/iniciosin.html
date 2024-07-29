@@ -31,40 +31,26 @@
             <div class="col-auto">
                 <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas"
                         data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
-                  
+                    <i class="bi bi-list"></i>
                 </button>
                 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar"
                      aria-labelledby="offcanvasNavbarLabel">
                     <div class="offcanvas-header">
-                        <h5 class="offcanvas-title" id="offcanvasNavbarLabel">MapaFCyT</h5>
+                        <h5 class="offcanvas-title" id="offcanvasNavbarLabel"><img width="55px" height="60px"
+                                                                                   src="{% static 'img/Mapa_FCyTcortado.jpg' %}">MapaFCyT
+                        </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="offcanvas"
                                 aria-label="Close"></button>
                     </div>
                     <div class="offcanvas-body" id="contenidoModal">
                         <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
                             <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="/materias/">Inicio</a>
+                                <a class="nav-link" aria-current="page" href="{% url 'iniciosin' %}">Inicio</a>
                             </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                                   aria-expanded="false">
-                                    Actividades
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                           data-bs-target="#modalmaterias">Agregar/Quitar
-                                        Materias</a></li>
 
-                                    <li><a class="dropdown-item" href="#">Agregar Eventos</a></li>
-                                    <li>
-                                        <hr class="dropdown-divider">
-                                    </li>
-                                    <li><a class="dropdown-item" href="#">Something else here</a></li>
-                                </ul>
-
-                            </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'custom_logout' %} ">Cerrar Sesion</a>
+                                <a id="offsesion" data-bs-toggle="modal" href="#"
+                                   data-bs-target="#cerrarsesionmodal" class="nav-link" >Salir</a>
                             </li>
                         </ul>
                     </div>
@@ -73,11 +59,12 @@
             <!-- Barra de búsqueda -->
             <div class="col-auto">
                 <form id="searchForm" class="d-flex" role="search">
-                    <input id="searchInput" class="form-control" list="suggestions" type="search" placeholder="Buscar en MapaFCyT" aria-label="Search">
-<datalist id="suggestions">
-      {% for ubicacion in ubicaciones %}
-      <option value="{{ ubicacion.descripcion }}"></option>
-       {% endfor %}
+                    <input id="searchInput" class="form-control" list="suggestions" type="search"
+                           placeholder="Buscar en MapaFCyT" aria-label="Search">
+                    <datalist id="suggestions">
+    {% for descripcion in ubicaciones_descripciones %}
+        <option value="{{ descripcion }}"></option>
+    {% endfor %}
 </datalist>
                     <button class="btn" type="submit" id="btn-buscar">
                         <i class="bi bi-search"></i> <!-- Icono de búsqueda -->
@@ -88,82 +75,41 @@
     </div>
 
 </nav>
-<div class="modal modal-lg fade" id="modalmaterias" data-bs-keyboard="true"
-     tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="false">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="staticBackdropLabel">
-                    Agregar Materias</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form method="get" id="forfiltro">
-                    <div class="selmate">
-                        <label for="semestre" class="sellabel">Semestre:</label>
-                        <select class="form-select" name="semestre" id="semestre">
-                        </select>
-                        <label for="carrera" class="sellabel">Carrera:</label>
-                        <select class="form-select" name="carrera" id="carrera"
-                                aria-label="Default select example">
-                        </select>
-                    </div>
-                </form>
-                <br>
-                <div class="bordercheck">
-                    <div class="check" id="matecon">
-                        <input type="checkbox" name="materias" class="btn-check" id="materias"
-                               autocomplete="off">
-                        <label class="btn" id="btnmate"
-                               for="materias"></label>
-                        <br>
-                    </div>
-                </div>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th>Materia</th>
-                        <th class="text-center">Semestre</th>
-                        <th class="text-center">Acciones</th>
-                    </tr>
-                    </thead>
-                    <tbody id="tablebody">
-                    </tbody>
-                </table>
-            </div>
-            <div class="modal-footer">
-                <div class="container-error"><label id="error-container" class="error-message"></label></div>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar
-                </button>
-                <button type="submit" class="btn btn-primary" id="btnguar">Agregar</button>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="eliminarmodal" tabindex="-1" aria-labelledby="exampleModalLabel"
+<div class="modal fade" id="cerrarsesionmodal" tabindex="-1" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Eliminar Materia</h1>
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Mensaje</h1>
             </div>
             <div class="modal-body">
-                ¿Seguro que Deseas Eliminar esta Materia?
-                <input type="hidden" id="input-materia-id">
+                ¿Seguro que Deseas Salir?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-target="#modalmaterias"
-                        data-bs-toggle="modal">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     Volver
                 </button>
-                <button type="button" class="btn btn-danger" id="btn-confirmar-eliminacion">Eliminar</button>
+                <button type="button" class="btn btn-danger btn-cerrarSesion"
+                        onclick="location.href='{% url 'login' %}'">Confirmar
+
+                </button>
             </div>
         </div>
     </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <div id="map"></div>
 <script>
@@ -191,6 +137,13 @@
   popupAnchor: [1, -34],
   shadowSize: [41, 41]
 });
+    var textIcon = L.divIcon({
+        className: 'text-icon', // Clases CSS opcionales para estilos adicionales
+        html: '<div style="font-size: 16px; color: black; background-color: transparent; padding: 5px; border-radius: 3px;">Entrada</div>',
+        iconSize: [80, 40], // Ajusta el tamaño del icono según el texto
+        iconAnchor: [40, 20] // Ajusta el anclaje del icono para centrar el texto
+    });
+    
     var bounds = L.latLngBounds(
         L.latLng(-25.453157778381083, -56.445153589817075), // Esquina suroeste
         L.latLng(-25.454265872490453, -56.44178651283933)  // Esquina noreste
@@ -206,24 +159,39 @@
         maxZoom: 21,
         minZoom: 18,
     }).addTo(map);
-    
-document.addEventListener("DOMContentLoaded", function() {
+    L.marker([-25.45334, -56.44293], {icon: textIcon}).addTo(map)
+document.addEventListener("DOMContentLoaded", function () {
     var highlightedMarker = null;
+    var alertMarker = null; // Variable para almacenar la referencia al marcador de alerta
+    var alertInterval = null; // Variable para almacenar el intervalo de alternancia
 
-    document.getElementById("searchForm").addEventListener("submit", function(event) {
+    document.getElementById("searchForm").addEventListener("submit", function (event) {
         event.preventDefault();
 
-        var searchInput = document.getElementById("searchInput").value.toLowerCase();
+        var searchInput = document.getElementById("searchInput").value.trim().toLowerCase();
         var matchingMarker = null;
 
         // Verificar si map está definido y es una instancia de Leaflet Map
         if (typeof map !== 'undefined' && map instanceof L.Map) {
-            map.eachLayer(function(layer) {
+            console.log('Map is defined and is an instance of Leaflet Map.');
+            map.eachLayer(function (layer) {
                 if (layer instanceof L.Marker && layer.getPopup()) { // Verificar si es un marcador y tiene un popup
                     var popupContent = layer.getPopup().getContent();
-                    if (popupContent && popupContent.toLowerCase().includes(searchInput)) {
-                        matchingMarker = layer;
-                        return;
+                    console.log('Popup content:', popupContent);
+                    if (popupContent) {
+                        // Dividir el contenido del popup en líneas
+                        var lines = popupContent.split('\n');
+
+                        // Extraer la primera línea y tomar la parte antes del guion
+                        var firstLine = lines[0].trim().toLowerCase();
+                        var descriptionBeforeDash = firstLine.split('-')[0].trim();
+
+                        // Comparar con el searchInput de manera exacta
+                        if (descriptionBeforeDash === searchInput) {
+                            console.log('Match found:', descriptionBeforeDash);
+                            matchingMarker = layer;
+                            return;
+                        }
                     }
                 }
             });
@@ -233,17 +201,58 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         if (!matchingMarker) {
+            console.log("No matching marker found.");
             alert("No se encontraron coincidencias en los marcadores.");
             return;
         }
 
         if (highlightedMarker) {
+            console.log('Resetting icon for previously highlighted marker.');
             highlightedMarker.setIcon(originalIcon);
         }
 
-        matchingMarker.setIcon(greenIcon);
         highlightedMarker = matchingMarker;
-        map.setView(matchingMarker.getLatLng(), 20);
+
+        // Eliminar el marcador de alerta anterior si existe
+        if (alertMarker) {
+            map.removeLayer(alertMarker);
+            clearInterval(alertInterval); // Detener el intervalo de alternancia
+        }
+
+        // Mostrar el texto de alerta en el centro del marcador coincidente
+        var markerLatLng = matchingMarker.getLatLng();
+        alertMarker = L.marker(markerLatLng, {
+            icon: L.divIcon({
+                className: 'alert-text',
+                html: '<div style="color: red; font-size: 24px; font-weight: bold;">&#10006;</div>', // &#10006; es el carácter Unicode para "X"
+                iconSize: [30, 30] // Ajusta el tamaño según sea necesario
+            })
+        }).addTo(map);
+
+        // Alternar visibilidad de la "X" cada 1.5 segundos
+        alertInterval = setInterval(function () {
+            if (map.hasLayer(alertMarker)) {
+                map.removeLayer(alertMarker);
+            } else {
+                alertMarker = L.marker(markerLatLng, {
+                    icon: L.divIcon({
+                        className: 'alert-text',
+                        html: '<div style="color: red; font-size: 24px; font-weight: bold;">&#10006;</div>', // &#10006; es el carácter Unicode para "X"
+                        iconSize: [30, 30]
+                    })
+                }).addTo(map);
+            }
+        }, 1500); // Alternar cada 1.5 segundos
+
+        // Detener el parpadeo después de 20 segundos
+        alertTimeout = setTimeout(function () {
+            clearInterval(alertInterval);
+            if (alertMarker) {
+                map.removeLayer(alertMarker);
+            }
+        }, 20000);
+
+        map.setView(markerLatLng, 20);
     });
 });
 
